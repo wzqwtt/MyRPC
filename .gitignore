@@ -12,3 +12,4 @@
 /rpc-consumer/rpc-consumer.iml
 /rpc-consumer/.mvn/
 /rpc-api/rpc-api.iml
+/rpc-api/target/
