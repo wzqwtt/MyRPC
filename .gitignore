@@ -1,0 +1,14 @@
+/.idea/
+/rpc-provider/mvnw
+/rpc-provider/mvnw.cmd
+/rpc-provider/.gitignore
+/rpc-provider/.mvn/
+/rpc-provider/.mvn/wrapper/
+/rpc-provider/.mvn/wrapper/maven-wrapper.jar
+/rpc-provider/.mvn/wrapper/maven-wrapper.properties
+/rpc-consumer/.gitignore
+/rpc-consumer/mvnw
+/rpc-consumer/mvnw.cmd
+/rpc-consumer/rpc-consumer.iml
+/rpc-consumer/.mvn/
+/rpc-api/rpc-api.iml
