@@ -2,11 +2,11 @@ package com.wzq.rpc.rpcconsumer.controller;
 
 import com.wzq.rpc.api.IUserService;
 import com.wzq.rpc.pojo.User;
+import com.wzq.rpc.rpcconsumer.anno.RpcReference;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
  * 用户的Controller类
  *
  * @author wzq
@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
+    /**
+     * 为IUserService接口添加RpcService注解，可以进行远程过程调用
+     */
+    @RpcReference
     IUserService userService;
 
     @RequestMapping("/getUserById")

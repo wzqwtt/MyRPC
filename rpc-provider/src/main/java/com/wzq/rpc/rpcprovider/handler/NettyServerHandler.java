@@ -9,6 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.cglib.reflect.FastClass;
+import org.springframework.cglib.reflect.FastMethod;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -116,9 +118,9 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> impl
         }
 
         // 通过反射调用bean的方法
-        Class<?> clz = serviceBean.getClass();
-        Method method = clz.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
-        return method.invoke(clz);
+        FastClass proxyClass = FastClass.create(serviceBean.getClass());
+        FastMethod method = proxyClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
+        return method.invoke(serviceBean, rpcRequest.getParameters());
     }
 
 }
