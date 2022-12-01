@@ -12,5 +12,16 @@
 
     <artifactId>rpc-simple</artifactId>
 
+    <dependencies>
+
+        <!-- rpc-common -->
+        <dependency>
+            <groupId>com.wzq.rpc</groupId>
+            <artifactId>rpc-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
 
 </project>

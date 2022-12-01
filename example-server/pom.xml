@@ -12,4 +12,22 @@
 
     <artifactId>example-server</artifactId>
 
+    <dependencies>
+
+        <!-- service-api -->
+        <dependency>
+            <groupId>com.wzq.rpc</groupId>
+            <artifactId>hello-service-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- simple -->
+        <dependency>
+            <groupId>com.wzq.rpc</groupId>
+            <artifactId>rpc-simple</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
 </project>

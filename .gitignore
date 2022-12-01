@@ -5,3 +5,8 @@
 /rpc-common/rpc-common.iml
 /rpc-core/rpc-core.iml
 /rpc-simple/rpc-simple.iml
+/rpc-simple/target/
+/rpc-common/target/
+/hello-service-api/target/
+/example-server/target/
+/example-client/target/
