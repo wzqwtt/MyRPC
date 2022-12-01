@@ -1,1 +1,7 @@
 /.idea/
+/example-client/example-client.iml
+/example-server/example-server.iml
+/hello-service-api/hello-service-api.iml
+/rpc-common/rpc-common.iml
+/rpc-core/rpc-core.iml
+/rpc-simple/rpc-simple.iml
