@@ -19,16 +19,21 @@ public class RpcServer {
 
     public RpcServer() {
         // 线程池参数
+        // 核心线程池大小
         int corePoolSize = 10;
+        // 最大线程池大小
         int maximumPoolSize = 100;
+        // 线程池中超过corePoolSize数目的空闲线程最大存活时间
         long keepAliveTime = 1;
-        // TODO 线程池
+        // 阻塞队列
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(100);
+        // 线程工厂
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
         this.threadPool = new ThreadPoolExecutor(
                 corePoolSize,
                 maximumPoolSize,
                 keepAliveTime,
+                // keepAliveTime时间单位
                 TimeUnit.MINUTES,
                 workQueue,
                 threadFactory
