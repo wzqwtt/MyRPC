@@ -1,4 +1,4 @@
-package com.wzq.rpc;
+package com.wzq.rpc.remoting.socket;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
@@ -19,7 +19,7 @@ import java.net.Socket;
  */
 public class RpcClient {
 
-    public static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
 
     public Object sendRpcRequest(RpcRequest rpcRequest, String host, int port) {
         try (Socket socket = new Socket(host, port)) {
