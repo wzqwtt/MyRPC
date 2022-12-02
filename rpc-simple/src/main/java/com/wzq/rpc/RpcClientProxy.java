@@ -1,5 +1,9 @@
 package com.wzq.rpc;
 
+import com.wzq.rpc.dto.RpcRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -9,6 +13,8 @@ import java.lang.reflect.Proxy;
  * @create 2022-12-01 22:17
  */
 public class RpcClientProxy implements InvocationHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
 
     private String host;
     private int port;
@@ -23,12 +29,14 @@ public class RpcClientProxy implements InvocationHandler {
         return (T) Proxy.newProxyInstance(
                 clazz.getClassLoader(),
                 new Class<?>[]{clazz},
-                RpcClientProxy.this
+                this
         );
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        logger.info("Call invoke method and invoked method: {}", method.getName());
 
         RpcRequest rpcRequest = RpcRequest.builder()
                 .methodName(method.getName())

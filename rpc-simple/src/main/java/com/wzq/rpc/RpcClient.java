@@ -1,5 +1,10 @@
 package com.wzq.rpc;
 
+import com.wzq.rpc.dto.RpcRequest;
+import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
+import com.wzq.rpc.enumeration.RpcResponseCode;
+import com.wzq.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,12 +27,26 @@ public class RpcClient {
             objectOutputStream.writeObject(rpcRequest);
 
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            return objectInputStream.readObject();
+
+            RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
+
+            if (rpcResponse == null) {
+                logger.error("调用服务失败,serviceName:{}", rpcRequest.getInterfaceName());
+                throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE,
+                        "interfaceName:" + rpcRequest.getInterfaceName());
+            }
+
+            if (rpcResponse.getCode() == null || !rpcResponse.getCode().equals(RpcResponseCode.SUCCESS.getCode())) {
+                logger.error("调用服务失败,serviceName:{},RpcRespnse:{}", rpcRequest.getInterfaceName(), rpcResponse);
+                throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE,
+                        "interfaceName:" + rpcRequest.getInterfaceName());
+            }
+
+            return rpcResponse.getData();
         } catch (IOException | ClassNotFoundException e) {
-            logger.error("occur exception:", e);
+            throw new RpcException("调用服务失败:", e);
         }
 
-        return null;
     }
 
 }
