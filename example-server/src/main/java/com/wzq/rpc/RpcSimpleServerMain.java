@@ -11,13 +11,16 @@ import com.wzq.rpc.transport.socket.SocketRpcServer;
 public class RpcSimpleServerMain {
 
     public static void main(String[] args) {
+        // new一个HelloServiceImpl实例
         HelloService helloService = new HelloServiceImpl();
         // 注册中心
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-        // 手动注册
+        // 手动注册：将helloService注册到注册中心
         serviceRegistry.register(helloService);
+
+        // 启动RpcServer服务器
         SocketRpcServer rpcServer = new SocketRpcServer();
-        rpcServer.register(helloService, 9999);
+        rpcServer.start(9999);
     }
 
 }
