@@ -1,10 +1,11 @@
-package com.wzq.rpc.remoting.socket;
+package com.wzq.rpc.transport.socket;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
+import com.wzq.rpc.transport.RpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +18,20 @@ import java.net.Socket;
  * @author wzq
  * @create 2022-12-01 21:25
  */
-public class RpcClient {
+public class SocketRpcClient implements RpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketRpcClient.class);
 
-    public Object sendRpcRequest(RpcRequest rpcRequest, String host, int port) {
+    private String host;
+    private int port;
+
+    public SocketRpcClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    @Override
+    public Object sendRpcRequest(RpcRequest rpcRequest) {
         try (Socket socket = new Socket(host, port)) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(rpcRequest);

@@ -1,9 +1,10 @@
-package com.wzq.rpc.remoting.socket;
+package com.wzq.rpc.transport.socket;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.registry.DefaultServiceRegistry;
 import com.wzq.rpc.registry.ServiceRegistry;
-import com.wzq.rpc.remoting.RpcRequestHandler;
+import com.wzq.rpc.transport.RpcRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,18 +17,21 @@ import java.net.Socket;
  * @author wzq
  * @create 2022-12-02 16:33
  */
-public class RpcRequestHandlerRunnable implements Runnable {
+public class SocketRpcRequestHandlerRunnable implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcRequestHandlerRunnable.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketRpcRequestHandlerRunnable.class);
 
     private Socket socket;
-    private RpcRequestHandler rpcRequestHandler;
-    private ServiceRegistry serviceRegistry;
+    private static RpcRequestHandler rpcRequestHandler;
+    private static ServiceRegistry serviceRegistry;
 
-    public RpcRequestHandlerRunnable(Socket socket, RpcRequestHandler rpcRequestHandler, ServiceRegistry serviceRegistry) {
+    static {
+        rpcRequestHandler = new RpcRequestHandler();
+        serviceRegistry = new DefaultServiceRegistry();
+    }
+
+    public SocketRpcRequestHandlerRunnable(Socket socket) {
         this.socket = socket;
-        this.rpcRequestHandler = rpcRequestHandler;
-        this.serviceRegistry = serviceRegistry;
     }
 
     @Override

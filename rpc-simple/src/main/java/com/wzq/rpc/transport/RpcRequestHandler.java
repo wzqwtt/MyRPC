@@ -1,9 +1,8 @@
-package com.wzq.rpc.remoting;
+package com.wzq.rpc.transport;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
-import com.wzq.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
