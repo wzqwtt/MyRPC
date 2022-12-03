@@ -2,7 +2,7 @@ package com.wzq.rpc;
 
 import com.wzq.rpc.registry.DefaultServiceRegistry;
 import com.wzq.rpc.registry.ServiceRegistry;
-import com.wzq.rpc.transport.netty.NettyRpcServer;
+import com.wzq.rpc.transport.netty.server.NettyRpcServer;
 
 /**
  * Netty服务端测试

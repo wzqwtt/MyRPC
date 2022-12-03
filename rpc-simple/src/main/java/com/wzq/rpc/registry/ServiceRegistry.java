@@ -1,7 +1,7 @@
 package com.wzq.rpc.registry;
 
 /**
- * 服务注册接口
+ * 服务注册中心接口
  *
  * @author wzq
  * @create 2022-12-02 16:36

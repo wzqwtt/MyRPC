@@ -1,4 +1,4 @@
-package com.wzq.rpc.transport.netty;
+package com.wzq.rpc.transport.netty.codec;
 
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
@@ -7,7 +7,6 @@ import com.wzq.rpc.serialize.kryo.KryoSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.logging.LogLevel;

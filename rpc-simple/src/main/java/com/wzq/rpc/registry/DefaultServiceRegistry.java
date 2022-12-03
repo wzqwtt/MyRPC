@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 默认的ServiceRegistry实现
+ * 默认的ServiceRegistry实现，通过Map保存服务信息
  *
  * @author wzq
  * @create 2022-12-02 16:39

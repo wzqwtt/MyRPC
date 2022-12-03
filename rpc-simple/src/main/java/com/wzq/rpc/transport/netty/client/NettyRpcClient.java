@@ -1,10 +1,12 @@
-package com.wzq.rpc.transport.netty;
+package com.wzq.rpc.transport.netty.client;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.serialize.Serializer;
 import com.wzq.rpc.serialize.kryo.KryoSerializer;
 import com.wzq.rpc.transport.RpcClient;
+import com.wzq.rpc.transport.netty.codec.NettySerializerDecoder;
+import com.wzq.rpc.transport.netty.codec.NettySerializerEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

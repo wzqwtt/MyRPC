@@ -1,7 +1,7 @@
 package com.wzq.rpc;
 
 import com.wzq.rpc.transport.RpcClientProxy;
-import com.wzq.rpc.transport.netty.NettyRpcClient;
+import com.wzq.rpc.transport.netty.client.NettyRpcClient;
 
 /**
  * Netty客户端测试

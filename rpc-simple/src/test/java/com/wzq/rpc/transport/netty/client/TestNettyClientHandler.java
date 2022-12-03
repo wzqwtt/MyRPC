@@ -1,9 +1,10 @@
-package com.wzq.rpc.transport.netty;
+package com.wzq.rpc.transport.netty.client;
 
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.serialize.Serializer;
 import com.wzq.rpc.serialize.kryo.KryoSerializer;
+import com.wzq.rpc.transport.netty.codec.TestNettySerializerCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Test;
 import org.slf4j.Logger;

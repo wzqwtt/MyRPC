@@ -1,4 +1,4 @@
-package com.wzq.rpc.transport.netty;
+package com.wzq.rpc.transport.netty.server;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
