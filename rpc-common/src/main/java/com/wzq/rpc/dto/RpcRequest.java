@@ -1,7 +1,6 @@
 package com.wzq.rpc.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -11,8 +10,12 @@ import java.io.Serializable;
  * @author wzq
  * @create 2022-12-01 21:21
  */
-@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class RpcRequest implements Serializable {
 
     private static final long serialVersionUID = 1905122041950251207L;

@@ -2,7 +2,7 @@ package com.wzq.rpc;
 
 import com.wzq.rpc.registry.DefaultServiceRegistry;
 import com.wzq.rpc.registry.ServiceRegistry;
-import com.wzq.rpc.remoting.socket.RpcServer;
+import com.wzq.rpc.transport.socket.SocketRpcServer;
 
 /**
  * @author wzq
@@ -16,7 +16,7 @@ public class RpcSimpleServerMain {
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         // 手动注册
         serviceRegistry.register(helloService);
-        RpcServer rpcServer = new RpcServer(serviceRegistry);
+        SocketRpcServer rpcServer = new SocketRpcServer();
         rpcServer.register(helloService, 9999);
     }
 

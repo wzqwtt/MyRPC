@@ -1,10 +1,8 @@
-package com.wzq.rpc.remoting.socket;
+package com.wzq.rpc.transport.socket;
 
-import com.wzq.rpc.ClientMessageHandlerThread;
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
-import com.wzq.rpc.registry.ServiceRegistry;
-import com.wzq.rpc.remoting.RpcRequestHandler;
+import com.wzq.rpc.transport.RpcRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +15,9 @@ import java.util.concurrent.*;
  * @author wzq
  * @create 2022-12-01 22:17
  */
-public class RpcServer {
+public class SocketRpcServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketRpcServer.class);
 
     /**
      * 线程池参数
@@ -39,17 +37,12 @@ public class RpcServer {
      */
     private RpcRequestHandler rpcRequestHandler = new RpcRequestHandler();
 
-    /**
-     * 服务注册中心
-     */
-    private final ServiceRegistry serviceRegistry;
-
-    public RpcServer(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+    public SocketRpcServer() {
+        // Runnable阻塞队列
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-
         // 线程工厂
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
+
         this.threadPool = new ThreadPoolExecutor(
                 CORE_POOL_SIZE,
                 MAXIMUM_POOL_SIZE,
@@ -83,7 +76,7 @@ public class RpcServer {
             while ((socket = server.accept()) != null) {
                 logger.info("client connected");
                 // 线程池执行任务
-                threadPool.execute(new RpcRequestHandlerRunnable(socket, rpcRequestHandler, serviceRegistry));
+                threadPool.execute(new SocketRpcRequestHandlerRunnable(socket));
             }
             // 关闭线程池
             threadPool.shutdown();
