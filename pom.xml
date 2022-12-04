@@ -32,7 +32,6 @@
 
     <modules>
         <module>rpc-simple</module>
-        <module>rpc-core</module>
         <module>rpc-common</module>
         <module>hello-service-api</module>
         <module>example-client</module>
