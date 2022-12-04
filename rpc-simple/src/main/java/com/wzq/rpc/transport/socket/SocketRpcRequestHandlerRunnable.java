@@ -55,6 +55,7 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
      */
     @Override
     public void run() {
+        logger.info("server handler message from client by thread {}", Thread.currentThread().getName());
         try (
                 // 入站流对象
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());

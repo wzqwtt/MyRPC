@@ -8,7 +8,7 @@ import com.wzq.rpc.transport.socket.SocketRpcServer;
  * @author wzq
  * @create 2022-12-01 22:58
  */
-public class RpcSimpleServerMain {
+public class SocketRpcServerMain {
 
     public static void main(String[] args) {
         // new一个HelloServiceImpl实例

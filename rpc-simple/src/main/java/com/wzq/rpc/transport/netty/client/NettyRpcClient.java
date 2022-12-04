@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Netty Rpc客户端。发送消息到服务端，并接收服务端返回的方法执行结果。
+ *
  * @author wzq
  * @create 2022-12-02 22:08
  */

@@ -25,6 +25,9 @@
         <kryo.version>4.0.2</kryo.version>
         <junit.version>4.12</junit.version>
         <apache.commons.version>2.8.0</apache.commons.version>
+
+        <!-- guava -->
+        <guava.version>30.1.1-jre</guava.version>
     </properties>
 
     <modules>

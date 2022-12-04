@@ -10,7 +10,7 @@ import com.wzq.rpc.transport.netty.server.NettyRpcServer;
  * @author wzq
  * @create 2022-12-03 21:54
  */
-public class NettyServerMain {
+public class NettyRpcServerMain {
 
     public static void main(String[] args) {
         // 手动注册服务到注册中心

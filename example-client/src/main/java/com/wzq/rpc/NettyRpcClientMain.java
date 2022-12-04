@@ -9,7 +9,7 @@ import com.wzq.rpc.transport.netty.client.NettyRpcClient;
  * @author wzq
  * @create 2022-12-03 21:56
  */
-public class NettyClientMain {
+public class NettyRpcClientMain {
 
     public static void main(String[] args) {
         // 获取Netty的RpcClient

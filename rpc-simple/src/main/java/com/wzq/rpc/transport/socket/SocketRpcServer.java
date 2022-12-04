@@ -1,5 +1,6 @@
 package com.wzq.rpc.transport.socket;
 
+import com.wzq.rpc.utils.concurrent.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,33 +20,13 @@ public class SocketRpcServer {
     private static final Logger logger = LoggerFactory.getLogger(SocketRpcServer.class);
 
     /**
-     * 线程池参数
-     */
-    private static final int CORE_POOL_SIZE = 10;
-    private static final int MAXIMUM_POOL_SIZE = 100;
-    private static final int KEPP_ALIVE_TIME = 1;
-    private static final int BLOCKING_QUEUE_CAPACITY = 100;
-
-    /**
      * 线程池
      */
     private ExecutorService threadPool;
 
     public SocketRpcServer() {
-        // Runnable阻塞队列
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-        // 线程工厂
-        ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        // 线程池
-        this.threadPool = new ThreadPoolExecutor(
-                CORE_POOL_SIZE,
-                MAXIMUM_POOL_SIZE,
-                KEPP_ALIVE_TIME,
-                // keepAliveTime时间单位
-                TimeUnit.MINUTES,
-                workQueue,
-                threadFactory
-        );
+        // 使用抽象出去的线程池工厂类创建线程池
+        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-server-rpc-pool");
     }
 
     /**

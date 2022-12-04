@@ -8,7 +8,7 @@ import com.wzq.rpc.transport.socket.SocketRpcClient;
  * @author wzq
  * @create 2022-12-01 23:00
  */
-public class RpcSimpleClientMain {
+public class SocketRpcClientMain {
 
     public static void main(String[] args) {
         // 获取一个Rpc客户端
