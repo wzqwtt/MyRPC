@@ -31,24 +31,22 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     /**
      * 专门处理Rpc请求的处理器
      */
-    private static RpcRequestHandler rpcRequestHandler;
-
-    /**
-     * 注册中心
-     */
-    private static ServiceRegistry serviceRegistry;
+    private static final RpcRequestHandler rpcRequestHandler;
 
     /**
      * 线程池
      */
-    private static ExecutorService threadPool;
+    private static final ExecutorService threadPool;
+
+    /**
+     * 自定义的线程池前缀名
+     */
+    private static final String THREAD_NAME_PREFIX = "netty-server-handler-rpc-pool";
 
     static {
         rpcRequestHandler = new RpcRequestHandler();
-        // TODO 注册中心的默认实现改为配置文件的方式
-        serviceRegistry = new DefaultServiceRegistry();
         // 获取线程池
-        threadPool = ThreadPoolFactory.createDefaultThreadPool("netty-server-handler-rpc-pool");
+        threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
     }
 
     @Override
@@ -62,10 +60,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     // 转换消息为RpcRequest类型
                     RpcRequest rpcRequest = (RpcRequest) msg;
                     logger.info("server receive msg: {}", rpcRequest);
-                    // 去注册中心找到请求体中接口对应的服务
-                    Object service = serviceRegistry.getService(rpcRequest.getInterfaceName());
+
                     // 调用RpcRequestHandler处理请求，反射调用方法并返回结果
-                    Object result = rpcRequestHandler.handle(rpcRequest, service);
+                    Object result = rpcRequestHandler.handle(rpcRequest);
                     logger.info("server get result: {}", result.toString());
 
                     // 将结果封装为RpcResponse发到客户端
@@ -84,7 +81,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("server catchexception...");
+        logger.error("server catch exception...");
         cause.printStackTrace();
         ctx.close();
     }

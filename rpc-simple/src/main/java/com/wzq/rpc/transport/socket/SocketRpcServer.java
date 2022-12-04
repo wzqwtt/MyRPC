@@ -22,11 +22,16 @@ public class SocketRpcServer {
     /**
      * 线程池
      */
-    private ExecutorService threadPool;
+    private final ExecutorService threadPool;
+
+    /**
+     * 自定义线程池名称
+     */
+    private static final String THREAD_NAME_PREFIX = "socket-server-rpc-pool";
 
     public SocketRpcServer() {
         // 使用抽象出去的线程池工厂类创建线程池
-        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-server-rpc-pool");
+        threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
     }
 
     /**

@@ -33,17 +33,11 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
     /**
      * 真正处理RpcRequest的类
      */
-    private static RpcRequestHandler rpcRequestHandler;
-
-    /**
-     * 服务端的注册中心
-     */
-    private static ServiceRegistry serviceRegistry;
+    private static final RpcRequestHandler rpcRequestHandler;
 
     static {
-        // 初始化处理RpcRequest类和默认的服务注册中心
+        // 初始化处理RpcRequest类
         rpcRequestHandler = new RpcRequestHandler();
-        serviceRegistry = new DefaultServiceRegistry();
     }
 
     public SocketRpcRequestHandlerRunnable(Socket socket) {
@@ -65,10 +59,8 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
             // 读取Socket里面的RpcRequest
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
 
-            // 获取接口名称，并且在“缓存中查找对应的service”，最后由handler进行处理
-            String interfaceName = rpcRequest.getInterfaceName();
-            Object service = serviceRegistry.getService(interfaceName);
-            Object result = rpcRequestHandler.handle(rpcRequest, service);
+            // 由handler进行处理
+            Object result = rpcRequestHandler.handle(rpcRequest);
 
             // 写数据到客户端
             objectOutputStream.writeObject(RpcResponse.success(result, rpcRequest.getRequestId()));

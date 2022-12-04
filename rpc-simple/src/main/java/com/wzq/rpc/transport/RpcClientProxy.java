@@ -20,16 +20,16 @@ public class RpcClientProxy implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
 
     /**
-     * RpcClient属性
+     * 用于发送请求给服务端，对应socket、Netty两种实现方式
      */
-    private RpcClient rpcClient;
+    private final RpcClient rpcClient;
 
     public RpcClientProxy(RpcClient rpcClient) {
         this.rpcClient = rpcClient;
     }
 
     /**
-     * 获取代理
+     * 通过 Proxy.newProxyInstance() 方法获取某个类的代理对象
      *
      * @param clazz 返回服务的代理
      * @param <T>   某个接口的class对象

@@ -37,7 +37,7 @@ public class NettyRpcServer {
     /**
      * 序列化器
      */
-    private Serializer serializer;
+    private final Serializer serializer;
 
     public NettyRpcServer(int port) {
         this.port = port;
