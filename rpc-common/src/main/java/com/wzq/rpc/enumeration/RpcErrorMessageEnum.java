@@ -13,6 +13,9 @@ import lombok.ToString;
 @ToString
 public enum RpcErrorMessageEnum {
 
+    // 客户端连接服务端失败
+    CLIENT_CONNECT_SERVER_FAILURE("客户端连接服务端失败"),
+
     // 服务调用失败响应消息
     SERVICE_INVOCATION_FAILURE("服务调用失败"),
 

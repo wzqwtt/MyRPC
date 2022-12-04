@@ -2,7 +2,7 @@ package com.wzq.rpc;
 
 import com.wzq.rpc.registry.DefaultServiceRegistry;
 import com.wzq.rpc.registry.ServiceRegistry;
-import com.wzq.rpc.transport.netty.server.NettyRpcServer;
+import com.wzq.rpc.transport.netty.server.NettyServer;
 
 /**
  * Netty服务端测试
@@ -19,7 +19,7 @@ public class NettyRpcServerMain {
         serviceRegistry.register(helloService);
 
         // 启动NettyRpcServer
-        NettyRpcServer nettyRpcServer = new NettyRpcServer(9999);
+        NettyServer nettyRpcServer = new NettyServer(9999);
         nettyRpcServer.start();
     }
 

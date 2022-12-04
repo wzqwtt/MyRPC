@@ -22,10 +22,10 @@ public class RpcClientProxy implements InvocationHandler {
     /**
      * 用于发送请求给服务端，对应socket、Netty两种实现方式
      */
-    private final RpcClient rpcClient;
+    private final ClientTransport clientTransport;
 
-    public RpcClientProxy(RpcClient rpcClient) {
-        this.rpcClient = rpcClient;
+    public RpcClientProxy(ClientTransport clientTransport) {
+        this.clientTransport = clientTransport;
     }
 
     /**
@@ -70,6 +70,6 @@ public class RpcClientProxy implements InvocationHandler {
                 .build();
 
         // 发送RpcRequest请求，并返回远程调用的结果
-        return rpcClient.sendRpcRequest(rpcRequest);
+        return clientTransport.sendRpcRequest(rpcRequest);
     }
 }

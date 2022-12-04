@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
  * @author wzq
  * @create 2022-12-02 20:22
  */
-public class NettyRpcServer {
+public class NettyServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(NettyRpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
     /**
      * 端口号
@@ -39,7 +39,7 @@ public class NettyRpcServer {
      */
     private final Serializer serializer;
 
-    public NettyRpcServer(int port) {
+    public NettyServer(int port) {
         this.port = port;
         // TODO 添加更多的序列化器，由配置文件决定使用哪种序列化方式
         this.serializer = new KryoSerializer();
@@ -67,9 +67,12 @@ public class NettyRpcServer {
                             ch.pipeline().addLast(new NettyServerHandler());
                         }
                     })
-                    // 设置TCP缓冲区
+                    // TCP默认开启了Nagle算法，该算法的作用是尽可能的发送大数据块，减少网络传输。
+                    // TCP_NODELAY参数的作用就是控制是否启用Nagle算法
                     .childOption(ChannelOption.TCP_NODELAY, true)
+                    // 表示系统用于临时存放已完成三次握手的请求队列的最大长度，如果连接建立频繁，服务器吃创建新连接较慢，可以适当调大这个参数
                     .option(ChannelOption.SO_BACKLOG, 128)
+                    // 是否开启TCP底层心跳机制
                     .option(ChannelOption.SO_KEEPALIVE, true);
 
             // 绑定端口，同步等待绑定成功

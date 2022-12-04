@@ -8,7 +8,7 @@ import com.wzq.rpc.dto.RpcRequest;
  * @author wzq
  * @create 2022-12-02 20:18
  */
-public interface RpcClient {
+public interface ClientTransport {
 
     /**
      * 负责发送RpcRequest，并返回远程过程调用的结果

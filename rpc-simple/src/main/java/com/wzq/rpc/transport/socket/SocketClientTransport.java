@@ -2,11 +2,10 @@ package com.wzq.rpc.transport.socket;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
-import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
-import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
-import com.wzq.rpc.transport.RpcClient;
+import com.wzq.rpc.transport.ClientTransport;
 import com.wzq.rpc.utils.checker.RpcMessageChecker;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,20 +20,16 @@ import java.net.Socket;
  * @author wzq
  * @create 2022-12-01 21:25
  */
-public class SocketRpcClient implements RpcClient {
+@AllArgsConstructor
+public class SocketClientTransport implements ClientTransport {
 
-    private static final Logger logger = LoggerFactory.getLogger(SocketRpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketClientTransport.class);
 
     /**
      * 主机和端口
      */
     private String host;
     private int port;
-
-    public SocketRpcClient(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
 
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
@@ -55,6 +50,7 @@ public class SocketRpcClient implements RpcClient {
             // 返回响应的结果
             return rpcResponse.getData();
         } catch (IOException | ClassNotFoundException e) {
+            logger.error("occur exception when send RpcRequest");
             throw new RpcException("调用服务失败:", e);
         }
 

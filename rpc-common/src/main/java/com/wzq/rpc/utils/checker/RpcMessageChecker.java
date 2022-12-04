@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 public class RpcMessageChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(RpcMessageChecker.class);
-    public static final String INTERFACE_NAME = "interfaceName";
+    private static final String INTERFACE_NAME = "interfaceName";
 
     private RpcMessageChecker() {
 
@@ -32,7 +32,7 @@ public class RpcMessageChecker {
     public static void check(RpcResponse rpcResponse, RpcRequest rpcRequest) {
         // 如果rpcResponse为空，则调用服务失败
         if (rpcResponse == null) {
-            logger.error("调用服务失败,serviceName:{}", rpcRequest.getInterfaceName());
+            logger.error("调用服务失败,rpcResponse为null,serviceName:{}", rpcRequest.getInterfaceName());
             throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
 
