@@ -7,6 +7,7 @@ import com.wzq.rpc.serialize.kryo.KryoSerializer;
 import com.wzq.rpc.transport.RpcClient;
 import com.wzq.rpc.transport.netty.codec.NettySerializerDecoder;
 import com.wzq.rpc.transport.netty.codec.NettySerializerEncoder;
+import com.wzq.rpc.utils.checker.RpcMessageChecker;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -92,8 +93,11 @@ public class NettyRpcClient implements RpcClient {
 
                 // AttributeKey在Channel上共享数据，是线程安全的
                 // 在AttributeKey中获取RpcResponse
-                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse");
+                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
                 RpcResponse rpcResponse = channel.attr(key).get();
+
+                // 校验request和response
+                RpcMessageChecker.check(rpcResponse, rpcRequest);
 
                 // 返回服务端响应的数据
                 return rpcResponse.getData();

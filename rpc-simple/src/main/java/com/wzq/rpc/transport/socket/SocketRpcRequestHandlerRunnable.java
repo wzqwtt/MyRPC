@@ -71,7 +71,7 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
             Object result = rpcRequestHandler.handle(rpcRequest, service);
 
             // 写数据到客户端
-            objectOutputStream.writeObject(RpcResponse.success(result));
+            objectOutputStream.writeObject(RpcResponse.success(result, rpcRequest.getRequestId()));
             objectOutputStream.flush();
         } catch (IOException | ClassNotFoundException e) {
             logger.error("occur exception:", e);

@@ -1,13 +1,13 @@
 package com.wzq.rpc.transport;
 
 import com.wzq.rpc.dto.RpcRequest;
-import com.wzq.rpc.transport.socket.SocketRpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 /**
  * RpcClient动态代理类，负责封装被调用方法的{@link RpcRequest}，并且发送请求给服务端
@@ -65,6 +65,8 @@ public class RpcClientProxy implements InvocationHandler {
                 .parameters(args)
                 .interfaceName(method.getDeclaringClass().getName())
                 .paramTypes(method.getParameterTypes())
+                // 设置Request ID
+                .requestId(UUID.randomUUID().toString())
                 .build();
 
         // 发送RpcRequest请求，并返回远程调用的结果

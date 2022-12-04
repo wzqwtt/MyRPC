@@ -21,6 +21,11 @@ public class RpcRequest implements Serializable {
     private static final long serialVersionUID = 1905122041950251207L;
 
     /**
+     * RpcRequest ID
+     */
+    private String requestId;
+
+    /**
      * 要调用的接口名
      */
     private String interfaceName;

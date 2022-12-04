@@ -20,7 +20,10 @@ public enum RpcErrorMessageEnum {
     SERVICE_CAN_NOT_FOUND("没有找到指定的服务"),
 
     // 注册的服务没有实现任何接口
-    SERVICE_NOT_IMPLEMENT_ANY_INTERFACE("注册的服务没有实现任何接口");
+    SERVICE_NOT_IMPLEMENT_ANY_INTERFACE("注册的服务没有实现任何接口"),
+
+    // 返回结果错误！请求和响应不匹配
+    REQUEST_NOT_MATCH_RESPONSE("返回结果错误！请求和响应不匹配");
 
     private final String message;
 

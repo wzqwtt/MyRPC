@@ -6,6 +6,7 @@ import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.transport.RpcClient;
+import com.wzq.rpc.utils.checker.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,21 +46,11 @@ public class SocketRpcClient implements RpcClient {
 
             // 阻塞接收客户端响应
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+            // 从流中读出RpcResponse
             RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
 
-            // 如果rpcResponse为空，则调用服务失败
-            if (rpcResponse == null) {
-                logger.error("调用服务失败,serviceName:{}", rpcRequest.getInterfaceName());
-                throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE,
-                        "interfaceName:" + rpcRequest.getInterfaceName());
-            }
-
-            // 如果响应码为空，或 响应码不为SUCCESS，则调用失败
-            if (rpcResponse.getCode() == null || !rpcResponse.getCode().equals(RpcResponseCode.SUCCESS.getCode())) {
-                logger.error("调用服务失败,serviceName:{},RpcRespnse:{}", rpcRequest.getInterfaceName(), rpcResponse);
-                throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE,
-                        "interfaceName:" + rpcRequest.getInterfaceName());
-            }
+            // 检查数据是否合格
+            RpcMessageChecker.check(rpcResponse, rpcRequest);
 
             // 返回响应的结果
             return rpcResponse.getData();
