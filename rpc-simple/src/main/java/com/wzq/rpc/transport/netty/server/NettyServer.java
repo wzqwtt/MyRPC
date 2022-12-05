@@ -80,10 +80,10 @@ public class NettyServer {
         serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         // 搞到Provider里面去
         serviceProvider.addServiceProvider(service);
-        start();
+//        start();
     }
 
-    private void start() {
+    public void start() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 

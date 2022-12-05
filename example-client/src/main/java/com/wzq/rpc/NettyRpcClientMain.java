@@ -4,6 +4,7 @@ import com.wzq.rpc.proxy.RpcClientProxy;
 import com.wzq.rpc.transport.netty.client.NettyClientTransport;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * Netty客户端测试
@@ -20,8 +21,15 @@ public class NettyRpcClientMain {
         RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
         // 获取HelloService接口的动态代理
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
+        // 获取HelloService接口的动态代理
+        StudentService studentService = rpcClientProxy.getProxy(StudentService.class);
+
+        // 进行服务调用
         String hello = helloService.hello(new Hello("我想调用", "好啊，去远程调用吧！"));
         System.out.println(hello);
+
+        List<Student> students = studentService.makeNStudent(5);
+        System.out.println(students);
     }
 
 }

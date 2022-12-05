@@ -11,9 +11,14 @@ public class SocketRpcServerMain {
     public static void main(String[] args) {
         // new一个HelloServiceImpl实例
         HelloService helloService = new HelloServiceImpl();
+        StudentServiceImpl studentService = new StudentServiceImpl();
 
         SocketRpcServer socketRpcServer = new SocketRpcServer("127.0.0.1", 9999);
+
         socketRpcServer.publishService(helloService, HelloService.class);
+        socketRpcServer.publishService(studentService, StudentService.class);
+
+        socketRpcServer.start();
     }
 
 }

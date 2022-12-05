@@ -72,14 +72,13 @@ public class SocketRpcServer {
         serviceProvider.addServiceProvider(service);
         // 注册服务到zookeeper
         serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        // TODO 启动服务类，如果暴露一个服务就启动一个ServerSocket是不是不太好。待改进。
-        start();
+//        start();
     }
 
     /**
      * 启动服务端
      */
-    private void start() {
+    public void start() {
         // 启动服务端
         try (ServerSocket server = new ServerSocket()) {
             server.bind(new InetSocketAddress(host, port));
