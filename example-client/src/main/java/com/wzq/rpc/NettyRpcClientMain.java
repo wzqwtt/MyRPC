@@ -1,6 +1,6 @@
 package com.wzq.rpc;
 
-import com.wzq.rpc.transport.RpcClientProxy;
+import com.wzq.rpc.proxy.RpcClientProxy;
 import com.wzq.rpc.transport.netty.client.NettyClientTransport;
 
 import java.net.InetSocketAddress;
@@ -15,9 +15,9 @@ public class NettyRpcClientMain {
 
     public static void main(String[] args) {
         // 获取Netty的RpcClient
-        NettyClientTransport nettyRpcClient = new NettyClientTransport(new InetSocketAddress("localhost", 9999));
+        NettyClientTransport rpcClient = new NettyClientTransport();
         // 获取RpcClient动态代理类
-        RpcClientProxy rpcClientProxy = new RpcClientProxy(nettyRpcClient);
+        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
         // 获取HelloService接口的动态代理
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         String hello = helloService.hello(new Hello("我想调用", "好啊，去远程调用吧！"));

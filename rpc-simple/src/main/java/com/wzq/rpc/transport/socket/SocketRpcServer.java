@@ -1,10 +1,15 @@
 package com.wzq.rpc.transport.socket;
 
+import com.wzq.rpc.provider.ServiceProvider;
+import com.wzq.rpc.provider.ServiceProviderImpl;
+import com.wzq.rpc.registry.ServiceRegistry;
+import com.wzq.rpc.registry.ZkServiceRegistry;
 import com.wzq.rpc.utils.concurrent.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
@@ -29,19 +34,55 @@ public class SocketRpcServer {
      */
     private static final String THREAD_NAME_PREFIX = "socket-server-rpc-pool";
 
-    public SocketRpcServer() {
+    /**
+     * 主机和端口
+     */
+    private final String host;
+    private final int port;
+
+    /**
+     * 注册中心
+     */
+    private final ServiceRegistry serviceRegistry;
+
+    /**
+     * Provider
+     */
+    private final ServiceProvider serviceProvider;
+
+    public SocketRpcServer(String host, int port) {
         // 使用抽象出去的线程池工厂类创建线程池
         threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
+
+        this.host = host;
+        this.port = port;
+        serviceRegistry = new ZkServiceRegistry();
+        serviceProvider = new ServiceProviderImpl();
+    }
+
+    /**
+     * 暴露服务
+     *
+     * @param service      服务的实现类
+     * @param serviceClass 类型
+     * @param <T>          服务的类型
+     */
+    public <T> void publishService(Object service, Class<T> serviceClass) {
+        // 将服务添加到Provider
+        serviceProvider.addServiceProvider(service);
+        // 注册服务到zookeeper
+        serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        // TODO 启动服务类，如果暴露一个服务就启动一个ServerSocket是不是不太好。待改进。
+        start();
     }
 
     /**
      * 启动服务端
-     *
-     * @param port 服务端监听的端口号
      */
-    public void start(int port) {
+    private void start() {
         // 启动服务端
-        try (ServerSocket server = new ServerSocket(port)) {
+        try (ServerSocket server = new ServerSocket()) {
+            server.bind(new InetSocketAddress(host, port));
             logger.info("server starts...");
             Socket socket;
 

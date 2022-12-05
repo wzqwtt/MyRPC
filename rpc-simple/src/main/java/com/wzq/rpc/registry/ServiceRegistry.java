@@ -1,5 +1,7 @@
 package com.wzq.rpc.registry;
 
+import java.net.InetSocketAddress;
+
 /**
  * 服务注册中心接口
  *
@@ -9,19 +11,19 @@ package com.wzq.rpc.registry;
 public interface ServiceRegistry {
 
     /**
-     * 注册一个服务
+     * 注册服务
      *
-     * @param service 服务
-     * @param <T>
+     * @param serviceName       服务名称
+     * @param inetSocketAddress socket地址
      */
-    <T> void register(T service);
+    void registerService(String serviceName, InetSocketAddress inetSocketAddress);
 
     /**
-     * 获取一个服务
+     * 查找服务
      *
      * @param serviceName 服务名称
-     * @return
+     * @return 返回服务的socket地址
      */
-    Object getService(String serviceName);
+    InetSocketAddress lookupService(String serviceName);
 
 }

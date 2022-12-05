@@ -1,6 +1,7 @@
-package com.wzq.rpc.transport;
+package com.wzq.rpc.proxy;
 
 import com.wzq.rpc.dto.RpcRequest;
+import com.wzq.rpc.transport.ClientTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

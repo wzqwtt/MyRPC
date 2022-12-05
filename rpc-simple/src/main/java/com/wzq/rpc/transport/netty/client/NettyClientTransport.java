@@ -2,6 +2,8 @@ package com.wzq.rpc.transport.netty.client;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.registry.ServiceRegistry;
+import com.wzq.rpc.registry.ZkServiceRegistry;
 import com.wzq.rpc.transport.ClientTransport;
 import com.wzq.rpc.utils.checker.RpcMessageChecker;
 import io.netty.channel.*;
@@ -22,13 +24,14 @@ public class NettyClientTransport implements ClientTransport {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClientTransport.class);
 
-    /**
-     * 主机和端口号
-     */
-    private InetSocketAddress inetSocketAddress;
+    private ServiceRegistry serviceRegistry;
 
-    public NettyClientTransport(InetSocketAddress inetSocketAddress) {
-        this.inetSocketAddress = inetSocketAddress;
+    public NettyClientTransport() {
+        serviceRegistry = new ZkServiceRegistry();
+    }
+
+    public NettyClientTransport(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
     }
 
     /**
@@ -43,6 +46,7 @@ public class NettyClientTransport implements ClientTransport {
         AtomicReference<Object> result = new AtomicReference<>(null);
 
         try {
+            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
             // 获取Channel
             Channel channel = ChannelProvider.get(inetSocketAddress);
 

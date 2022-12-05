@@ -28,6 +28,11 @@
 
         <!-- guava -->
         <guava.version>30.1.1-jre</guava.version>
+
+        <!-- register center -->
+        <zookeeper.version>3.5.7</zookeeper.version>
+        <curator.framework.version>4.0.1</curator.framework.version>
+        <curator.recipes.version>4.0.1</curator.recipes.version>
     </properties>
 
     <modules>

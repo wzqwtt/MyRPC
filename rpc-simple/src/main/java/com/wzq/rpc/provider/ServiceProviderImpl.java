@@ -1,7 +1,8 @@
-package com.wzq.rpc.registry;
+package com.wzq.rpc.provider;
 
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
+import com.wzq.rpc.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author wzq
  * @create 2022-12-02 16:39
  */
-public class DefaultServiceRegistry implements ServiceRegistry {
+public class ServiceProviderImpl implements ServiceProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     /**
      * 接口名和服务的对应关系，TODO 处理一个接口被两个实现类实现的情况
@@ -36,7 +37,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      * @param <T>
      */
     @Override
-    public <T> void register(T service) {
+    public <T> void addServiceProvider(T service) {
         // 获取service的名称
         String serviceName = service.getClass().getCanonicalName();
 
@@ -69,7 +70,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
      * @return 服务
      */
     @Override
-    public Object getService(String serviceName) {
+    public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null) {
             throw new RpcException(RpcErrorMessageEnum.SERVICE_CAN_NOT_FOUND);

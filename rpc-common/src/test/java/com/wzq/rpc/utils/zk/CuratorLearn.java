@@ -4,6 +4,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.BackgroundCallback;
 import org.apache.curator.framework.api.CuratorEvent;
+import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
@@ -340,6 +341,73 @@ public class CuratorLearn {
                     }
                 })
                 .forPath("/node");
+    }
+
+    /*************************************************************
+     **************************Watcher****************************
+     *************************************************************/
+
+    /**
+     * Watcher
+     * <ul>
+     *     <li>curator提供了两种Watcher(Cache)来监听结点的变化</li>
+     *     <li>{@code NodeCache}：只是监听某一个特点的节点，监听节点的<b>新增、修改数据、删除</b>。
+     *     （子节点的新增、删除、修改均不会管）</li>
+     *     <li>{@code PathChildrenCache}：监控一个ZNode的子节点。当一个子节点<b>新增、修改、
+     *     删除</b>时，PathCache会改变它的状态，会包含最新的子节点，子节点的数据和状态</li>
+     *     <li>这个监视器可以多次使用</li>
+     * </ul>
+     * <p>
+     * 案例一：NodeCache
+     */
+    @Test
+    public void testWatch1() throws Exception {
+        // 观察节点的变化
+        NodeCache nodeCache = new NodeCache(client, "/node22");
+        nodeCache.start();
+
+        nodeCache.getListenable()
+                .addListener(new NodeCacheListener() {
+                    @Override
+                    public void nodeChanged() throws Exception {
+                        ChildData currentData = nodeCache.getCurrentData();
+                        if (currentData != null) {
+                            logger.info("{}", currentData.getPath());
+                            logger.info(new String(currentData.getData()));
+                        } else {
+                            logger.info("节点不存在");
+                        }
+                    }
+                });
+
+        // 在这里睡1分钟，然后自己手动操作这个节点
+        TimeUnit.SECONDS.sleep(60);
+        nodeCache.close();
+    }
+
+    /**
+     * 案例二：PathChildrenCache
+     */
+    @Test
+    public void testWatch2() throws Exception {
+        // 观察节点的变化
+        PathChildrenCache pathChildrenCache = new PathChildrenCache(client, "/node22", true);
+        pathChildrenCache.start();
+
+        pathChildrenCache.getListenable()
+                .addListener(new PathChildrenCacheListener() {
+                    @Override
+                    public void childEvent(CuratorFramework curatorFramework, PathChildrenCacheEvent pathChildrenCacheEvent) throws Exception {
+                        logger.info("{}", pathChildrenCacheEvent.getType());
+                        logger.info("{}", pathChildrenCacheEvent.getData().toString());
+                        logger.info("{}", new String(pathChildrenCacheEvent.getData().getData()));
+                        logger.info("{}", pathChildrenCacheEvent.getData().getPath());
+                        logger.info("{}", pathChildrenCacheEvent.getData().getStat().toString());
+                    }
+                });
+        // 在这里睡1分钟，然后自己手动操作这个节点
+        TimeUnit.SECONDS.sleep(60);
+        pathChildrenCache.close();
     }
 
 }

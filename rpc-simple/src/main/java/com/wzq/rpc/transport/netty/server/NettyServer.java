@@ -2,6 +2,10 @@ package com.wzq.rpc.transport.netty.server;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.provider.ServiceProvider;
+import com.wzq.rpc.provider.ServiceProviderImpl;
+import com.wzq.rpc.registry.ServiceRegistry;
+import com.wzq.rpc.registry.ZkServiceRegistry;
 import com.wzq.rpc.serialize.Serializer;
 import com.wzq.rpc.serialize.kryo.KryoSerializer;
 import com.wzq.rpc.transport.netty.codec.NettySerializerDecoder;
@@ -19,6 +23,8 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 /**
  * Netty RPC服务端。接收客户端消息，并且根据客户端的消息调用相应的方法，然后返回结果给客户端。
  *
@@ -30,22 +36,54 @@ public class NettyServer {
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
     /**
-     * 端口号
+     * 主机和端口号
      */
+    private final String host;
     private final int port;
+
+    /**
+     * 注册中心
+     */
+    private final ServiceRegistry serviceRegistry;
+
+    /**
+     * 服务的Provider
+     */
+    private final ServiceProvider serviceProvider;
 
     /**
      * 序列化器
      */
     private final Serializer serializer;
 
-    public NettyServer(int port) {
+    public NettyServer(String host, int port) {
+        this.host = host;
         this.port = port;
         // TODO 添加更多的序列化器，由配置文件决定使用哪种序列化方式
         this.serializer = new KryoSerializer();
+
+        // 注册中心
+        serviceRegistry = new ZkServiceRegistry();
+        // Provider
+        serviceProvider = new ServiceProviderImpl();
     }
 
-    public void start() {
+    /**
+     * 暴露服务
+     *
+     * @param service      服务
+     * @param serviceClass 服务的类型
+     * @param <T>          服务的类型
+     */
+    public <T> void publishService(Object service, Class<T> serviceClass) {
+        // 注册到注册中心
+        serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        // 搞到Provider里面去
+        serviceProvider.addServiceProvider(service);
+        start();
+    }
+
+    private void start() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -76,7 +114,7 @@ public class NettyServer {
                     .option(ChannelOption.SO_KEEPALIVE, true);
 
             // 绑定端口，同步等待绑定成功
-            ChannelFuture channelFuture = b.bind(port).sync();
+            ChannelFuture channelFuture = b.bind(host, port).sync();
 
             // 等待服务端监听端口关闭
             channelFuture.channel().closeFuture().sync();

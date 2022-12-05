@@ -1,9 +1,10 @@
-package com.wzq.rpc.transport;
+package com.wzq.rpc.handler;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
-import com.wzq.rpc.registry.DefaultServiceRegistry;
+import com.wzq.rpc.provider.ServiceProvider;
+import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,10 @@ public class RpcRequestHandler {
     /**
      * 注册中心
      */
-    private static final ServiceRegistry serviceRegistry;
+    private static final ServiceProvider SERVICE_PROVIDER;
 
     static {
-        serviceRegistry = new DefaultServiceRegistry();
+        SERVICE_PROVIDER = new ServiceProviderImpl();
     }
 
     /**
@@ -39,8 +40,8 @@ public class RpcRequestHandler {
     public Object handle(RpcRequest rpcRequest) {
         Object result = null;
 
-        // 通过注册中心获取目标类
-        Object service = serviceRegistry.getService(rpcRequest.getInterfaceName());
+        // 通过Provider获取目标类（即客户端需要调用的类）
+        Object service = SERVICE_PROVIDER.getServiceProvider(rpcRequest.getInterfaceName());
 
         try {
             // 反射调用方法
