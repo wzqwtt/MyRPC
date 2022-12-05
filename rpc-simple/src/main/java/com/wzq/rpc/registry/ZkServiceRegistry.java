@@ -44,13 +44,4 @@ public class ZkServiceRegistry implements ServiceRegistry {
         logger.info("节点创建成功，节点为:{}", servicePath);
     }
 
-    @Override
-    public InetSocketAddress lookupService(String serviceName) {
-        // TODO 负载均衡
-        // 这里直接取了第一个找到的服务地址
-        String serviceAddress = CuratorHelper.getChildrenNodes(zkClient, serviceName).get(0);
-        logger.info("成功找到服务地址:{}", serviceAddress);
-        String[] address = serviceAddress.split(":");
-        return new InetSocketAddress(address[0], Integer.parseInt(address[1]));
-    }
 }

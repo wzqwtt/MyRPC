@@ -18,7 +18,8 @@ public class ZkServiceRegistryTest {
         String serviceName = "com.wzq.registry.ZkServiceRegistry";
         zkServiceRegistry.registerService(serviceName, givenInetSocketAddress);
 
-        InetSocketAddress inetSocketAddress = zkServiceRegistry.lookupService(serviceName);
+        ZkServiceDiscovery zkServiceDiscovery = new ZkServiceDiscovery();
+        InetSocketAddress inetSocketAddress = zkServiceDiscovery.lookupService(serviceName);
         System.out.println(inetSocketAddress);
         try {
             TimeUnit.SECONDS.sleep(10);

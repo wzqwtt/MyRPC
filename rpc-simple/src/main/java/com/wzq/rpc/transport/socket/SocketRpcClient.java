@@ -3,7 +3,9 @@ package com.wzq.rpc.transport.socket;
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.exception.RpcException;
+import com.wzq.rpc.registry.ServiceDiscovery;
 import com.wzq.rpc.registry.ServiceRegistry;
+import com.wzq.rpc.registry.ZkServiceDiscovery;
 import com.wzq.rpc.registry.ZkServiceRegistry;
 import com.wzq.rpc.transport.ClientTransport;
 import com.wzq.rpc.utils.checker.RpcMessageChecker;
@@ -27,24 +29,16 @@ public class SocketRpcClient implements ClientTransport {
     private static final Logger logger = LoggerFactory.getLogger(SocketRpcClient.class);
 
     /**
-     * 注册中心
+     * 服务发现
      */
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
     /**
      * 无参构造方法，默认创建一个Zookeeper的注册中心
      */
     public SocketRpcClient() {
-        this.serviceRegistry = new ZkServiceRegistry();
-    }
+        this.serviceDiscovery = new ZkServiceDiscovery();
 
-    /**
-     * 构造方法，用户可以自己传递一个注册中心的实现
-     *
-     * @param serviceRegistry 注册中心接口
-     */
-    public SocketRpcClient(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
     }
 
     /**
@@ -56,7 +50,7 @@ public class SocketRpcClient implements ClientTransport {
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
         // 获取rpcRequest方法的接口名，并在注册中心寻找实现类所在主机和端口号
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
         // 新建一个Socket
         try (Socket socket = new Socket()) {
             // 连接到服务所在的主机
