@@ -58,7 +58,13 @@ public class CuratorHelper {
     /**
      * 服务地址
      */
-    private static final Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
+    private static Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
+
+    /**
+     * 防止其他人创建该类，构造方法私有化
+     */
+    private CuratorHelper() {
+    }
 
     /**
      * 获取连接对象
@@ -105,7 +111,7 @@ public class CuratorHelper {
     }
 
     /**
-     * 获取某个service下的子节点
+     * 获取某个service下的子节点，也就是获取所有提供服务的生产者的地址
      *
      * @param zkClient    zkClient
      * @param serviceName 服务名称

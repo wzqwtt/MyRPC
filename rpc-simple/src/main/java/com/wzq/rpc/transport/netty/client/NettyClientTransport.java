@@ -75,6 +75,7 @@ public class NettyClientTransport implements ClientTransport {
                 // 返回服务端响应的数据
                 result.set(rpcResponse.getData());
             } else {
+                NettyClient.close();
                 System.exit(0);
             }
         } catch (InterruptedException e) {

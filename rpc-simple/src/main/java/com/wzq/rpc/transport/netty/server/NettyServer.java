@@ -75,11 +75,11 @@ public class NettyServer {
      * @param serviceClass 服务的类型
      * @param <T>          服务的类型
      */
-    public <T> void publishService(Object service, Class<T> serviceClass) {
+    public <T> void publishService(T service, Class<T> serviceClass) {
         // 注册到注册中心
         serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         // 搞到Provider里面去
-        serviceProvider.addServiceProvider(service);
+        serviceProvider.addServiceProvider(service, serviceClass);
 //        start();
     }
 

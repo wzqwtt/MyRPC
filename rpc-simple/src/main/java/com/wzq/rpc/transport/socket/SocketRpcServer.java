@@ -67,9 +67,9 @@ public class SocketRpcServer {
      * @param serviceClass 类型
      * @param <T>          服务的类型
      */
-    public <T> void publishService(Object service, Class<T> serviceClass) {
+    public <T> void publishService(T service, Class<T> serviceClass) {
         // 将服务添加到Provider
-        serviceProvider.addServiceProvider(service);
+        serviceProvider.addServiceProvider(service, serviceClass);
         // 注册服务到zookeeper
         serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
 //        start();

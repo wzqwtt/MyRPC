@@ -37,9 +37,9 @@ public class ServiceProviderImpl implements ServiceProvider {
      * @param <T>
      */
     @Override
-    public <T> void addServiceProvider(T service) {
+    public <T> void addServiceProvider(T service, Class<T> serviceClass) {
         // 获取service的名称
-        String serviceName = service.getClass().getCanonicalName();
+        String serviceName = serviceClass.getCanonicalName();
 
         // 如果传递过来的service所实现的接口已经被注册，那么直接返回
         if (registeredService.contains(serviceName)) {
@@ -48,19 +48,9 @@ public class ServiceProviderImpl implements ServiceProvider {
 
         registeredService.add(serviceName);
 
-        // 获取传递过来的service实现的所有接口
-        Class<?>[] interfaces = service.getClass().getInterfaces();
-        if (interfaces.length == 0) {
-            // 如果没有实现任何接口，那么throw一个异常
-            throw new RpcException(RpcErrorMessageEnum.SERVICE_NOT_IMPLEMENT_ANY_INTERFACE);
-        }
+        serviceMap.put(serviceName, service);
 
-        // 所有接口都注册到map中
-        for (Class<?> i : interfaces) {
-            serviceMap.put(i.getCanonicalName(), service);
-        }
-
-        logger.info("Add service: {} and interfaces {}", serviceName, interfaces);
+        logger.info("Add service: {} and interfaces {}", serviceName, service.getClass().getInterfaces());
     }
 
     /**
