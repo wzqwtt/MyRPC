@@ -17,21 +17,6 @@ public class ZkServiceRegistry implements ServiceRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(ZkServiceRegistry.class);
 
-    /**
-     * zookeeper客户端
-     */
-    private final CuratorFramework zkClient;
-
-    /**
-     * 获取zkClient，并启动zk客户端
-     */
-    public ZkServiceRegistry() {
-        // 获取ZkClient
-        zkClient = CuratorHelper.getZKClient();
-        // 启动zk客户端
-        zkClient.start();
-    }
-
     @Override
     public void registerService(String serviceName, InetSocketAddress inetSocketAddress) {
         // 根节点下注册子节点：服务
@@ -40,8 +25,7 @@ public class ZkServiceRegistry implements ServiceRegistry {
         // 节点路径: /my-rpc/com.wzq.rpc.HelloService/127.0.0.1:9999
         servicePath.append(inetSocketAddress.toString());
         // 注册为临时节点，Server关闭即释放实现类信息
-        CuratorHelper.createEphemeraNode(zkClient, servicePath.toString());
-        logger.info("节点创建成功，节点为:{}", servicePath);
+        CuratorHelper.createEphemeraNode(servicePath.toString());
     }
 
 }

@@ -6,7 +6,6 @@ import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
-import com.wzq.rpc.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +25,7 @@ public class RpcRequestHandler {
     /**
      * 注册中心
      */
-    private static final ServiceProvider SERVICE_PROVIDER;
-
-    static {
-        SERVICE_PROVIDER = new ServiceProviderImpl();
-    }
+    private static final ServiceProvider serviceProvider = new ServiceProviderImpl();
 
     /**
      * 处理RpcRequest中的请求
@@ -42,7 +37,7 @@ public class RpcRequestHandler {
         Object result = null;
 
         // 通过Provider获取目标类（即客户端需要调用的类）
-        Object service = SERVICE_PROVIDER.getServiceProvider(rpcRequest.getInterfaceName());
+        Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
 
         // 反射调用方法
         result = invokeTargetMethod(rpcRequest, service);

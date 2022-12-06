@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author wzq
  * @create 2022-12-04 21:49
  */
-public class NettyClient {
+public final class NettyClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
@@ -30,7 +30,6 @@ public class NettyClient {
      * 私有化构造方法
      */
     private NettyClient() {
-
     }
 
     private static final Bootstrap b;

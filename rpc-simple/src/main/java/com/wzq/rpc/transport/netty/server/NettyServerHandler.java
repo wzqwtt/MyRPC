@@ -6,6 +6,7 @@ import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.handler.RpcRequestHandler;
 import com.wzq.rpc.utils.concurrent.ThreadPoolFactory;
+import com.wzq.rpc.utils.factory.SingletonFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -29,22 +30,23 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     /**
      * 专门处理Rpc请求的处理器
      */
-    private static final RpcRequestHandler rpcRequestHandler;
+    private final RpcRequestHandler rpcRequestHandler;
 
     /**
      * 线程池
      */
-    private static final ExecutorService threadPool;
+    private final ExecutorService threadPool;
 
     /**
      * 自定义的线程池前缀名
      */
     private static final String THREAD_NAME_PREFIX = "netty-server-handler-rpc-pool";
 
-    static {
-        rpcRequestHandler = new RpcRequestHandler();
+    public NettyServerHandler() {
+        // 通过单例工厂获得RpcRequest类，用于反射调用RpcRequest里的方法
+        this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
         // 获取线程池
-        threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
+        this.threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
     }
 
     @Override

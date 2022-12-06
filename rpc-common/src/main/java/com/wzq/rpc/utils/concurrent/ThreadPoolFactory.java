@@ -10,7 +10,7 @@ import java.util.concurrent.*;
  * @author wzq
  * @create 2022-12-04 16:17
  */
-public class ThreadPoolFactory {
+public final class ThreadPoolFactory {
 
     /**
      * 线程池参数

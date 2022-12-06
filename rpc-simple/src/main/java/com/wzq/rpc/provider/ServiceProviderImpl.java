@@ -25,8 +25,8 @@ public class ServiceProviderImpl implements ServiceProvider {
      * key: service/interface name
      * value: service
      */
-    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
-    private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
+    private static Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private static Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     /**
      * 注册一个service，将这个对象所有实现的接口都注册进去

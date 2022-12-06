@@ -3,6 +3,7 @@ package com.wzq.rpc.transport.socket;
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.handler.RpcRequestHandler;
+import com.wzq.rpc.utils.factory.SingletonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +31,12 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
     /**
      * 真正处理RpcRequest的类
      */
-    private static final RpcRequestHandler rpcRequestHandler;
-
-    static {
-        // 初始化处理RpcRequest类
-        rpcRequestHandler = new RpcRequestHandler();
-    }
+    private RpcRequestHandler rpcRequestHandler;
 
     public SocketRpcRequestHandlerRunnable(Socket socket) {
         this.socket = socket;
+        // 通过单例工厂获得RpcRequest类，用于反射调用RpcRequest里的方法
+        this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
     }
 
     /**
