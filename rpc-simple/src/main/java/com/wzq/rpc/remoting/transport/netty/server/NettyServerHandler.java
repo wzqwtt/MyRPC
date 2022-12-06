@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
  */
 @Slf4j
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
-    
+
     /**
      * 专门处理Rpc请求的处理器
      */
@@ -63,9 +63,12 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     Object result = rpcRequestHandler.handle(rpcRequest);
                     log.info("server get result: {}", result.toString());
 
-                    // 将结果封装为RpcResponse发到客户端
-                    ChannelFuture f = ctx.writeAndFlush(RpcResponse.success(result, rpcRequest.getRequestId()));
-                    f.addListener(ChannelFutureListener.CLOSE);
+                    if (ctx.channel().isActive() && ctx.channel().isWritable()) {
+                        // 返回方法执行结果给客户端
+                        ctx.writeAndFlush(RpcResponse.success(result, rpcRequest.getRequestId()));
+                    } else {
+                        log.error("not writable now, message dropped");
+                    }
                 } finally {
                     // 释放资源
                     ReferenceCountUtil.release(msg);

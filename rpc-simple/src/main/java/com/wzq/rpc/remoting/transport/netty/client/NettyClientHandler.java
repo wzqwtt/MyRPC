@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.transport.netty.client;
 
+import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
@@ -17,7 +18,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
-    
+
+    private final UnprocessedRequests unprocessedRequests;
+
+    public NettyClientHandler() {
+        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+    }
+
     /**
      * 读取管道中的数据
      *
@@ -31,16 +38,9 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
         // 在上一步的解码器中，已经解码为RpcResponse类型，再判断一下
         if (msg instanceof RpcResponse) {
             try {
+                log.info("client receive msg: {}", msg);
                 RpcResponse rpcResponse = (RpcResponse) msg;
-                log.info(String.format("client receive msg: %s", rpcResponse));
-
-                // 声明一个AttributeKey对象
-                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcResponse.getRequestId());
-
-                // 将服务端返回的响应保存到AttributeMap上，该Map可以看作是一个Channel的共享数据源
-                // AttributeMap的key是AttributeKey，value是RpcResponse
-                ctx.channel().attr(key).set(rpcResponse);
-                ctx.channel().close();
+                unprocessedRequests.complete(rpcResponse);
             } finally {
                 // 释放msg资源
                 ReferenceCountUtil.release(msg);

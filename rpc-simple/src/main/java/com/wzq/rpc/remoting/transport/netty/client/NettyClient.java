@@ -65,7 +65,7 @@ public final class NettyClient {
      *
      * @return 返回BootStrap
      */
-    public static Bootstrap initializeBootstrap() {
+    public static Bootstrap getBootstrap() {
         return b;
     }
 

@@ -64,7 +64,7 @@ public class SocketRpcClient implements ClientTransport {
             RpcMessageChecker.check(rpcResponse, rpcRequest);
 
             // 返回响应的结果
-            return rpcResponse.getData();
+            return rpcResponse;
         } catch (IOException | ClassNotFoundException e) {
             log.error("occur exception when send RpcRequest");
             throw new RpcException("调用服务失败:", e);

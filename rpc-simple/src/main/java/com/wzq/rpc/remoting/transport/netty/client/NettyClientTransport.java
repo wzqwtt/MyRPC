@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.transport.netty.client;
 
+import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.registry.ServiceDiscovery;
@@ -11,6 +12,7 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -21,14 +23,17 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 public class NettyClientTransport implements ClientTransport {
-    
+
     /**
      * 服务发现
      */
-    private ServiceDiscovery serviceDiscovery;
+    private final ServiceDiscovery serviceDiscovery;
+
+    private final UnprocessedRequests unprocessedRequests;
 
     public NettyClientTransport() {
-        serviceDiscovery = new ZkServiceDiscovery();
+        this.serviceDiscovery = new ZkServiceDiscovery();
+        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }
 
     /**
@@ -38,48 +43,39 @@ public class NettyClientTransport implements ClientTransport {
      * @return 服务端返回的数据
      */
     @Override
-    public Object sendRpcRequest(RpcRequest rpcRequest) {
-        // 使用原子类保存结果，最终返回
-        AtomicReference<Object> result = new AtomicReference<>(null);
+    public CompletableFuture<RpcResponse> sendRpcRequest(RpcRequest rpcRequest) {
+        // 构建返回值
+        CompletableFuture<RpcResponse> resultFuture = new CompletableFuture<>();
 
         try {
             InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             // 获取Channel
             Channel channel = ChannelProvider.get(inetSocketAddress);
 
-            if (channel.isActive()) {
+            if (channel != null && channel.isActive()) {
+                // 放入未处理的请求
+                unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
+
                 // 发送消息
                 channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
                     if (future.isSuccess()) {
                         log.info(String.format("client send message: %s", rpcRequest.toString()));
                     } else {
                         future.channel().close();
+                        resultFuture.completeExceptionally(future.cause());
                         log.error("Send failed:", future.cause());
                     }
                 });
-
-                channel.closeFuture().sync();
-
-                // AttributeKey在Channel上共享数据，是线程安全的
-                // 在AttributeKey中获取RpcResponse
-                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
-                RpcResponse rpcResponse = channel.attr(key).get();
-                log.info("client get rpcResponse from channel:{}", rpcResponse);
-
-                // 校验request和response
-                RpcMessageChecker.check(rpcResponse, rpcRequest);
-
-                // 返回服务端响应的数据
-                result.set(rpcResponse.getData());
             } else {
-                NettyClient.close();
-                System.exit(0);
+                throw new IllegalStateException();
             }
         } catch (InterruptedException e) {
-            log.error("occur exception when connect server: ", e);
+            unprocessedRequests.remove(rpcRequest.getRequestId());
+            log.error(e.getMessage(), e);
+            Thread.currentThread().interrupt();
         }
 
-        return result.get();
+        return resultFuture;
     }
 
 

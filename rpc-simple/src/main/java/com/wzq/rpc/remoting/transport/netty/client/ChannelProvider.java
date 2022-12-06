@@ -24,7 +24,7 @@ public class ChannelProvider {
     /**
      * 客户端Bootstrap对象，通过{@link NettyClient}获取
      */
-    private static Bootstrap bootstrap = NettyClient.initializeBootstrap();
+    private static Bootstrap bootstrap = NettyClient.getBootstrap();
 
     /**
      * Channel对象，客户端与服务端连接的桥梁
