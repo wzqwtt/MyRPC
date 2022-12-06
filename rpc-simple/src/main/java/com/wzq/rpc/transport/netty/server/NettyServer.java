@@ -59,7 +59,7 @@ public class NettyServer {
     public NettyServer(String host, int port) {
         this.host = host;
         this.port = port;
-        // TODO 添加更多的序列化器，由配置文件决定使用哪种序列化方式
+        // TODO(serializer) 添加更多的序列化器，由配置文件决定使用哪种序列化方式
         this.serializer = new KryoSerializer();
 
         // 注册中心
@@ -95,7 +95,7 @@ public class NettyServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            // TODO 粘包半包问题
+                            // TODO(sticky) 粘包半包问题
                             /* 自定义的序列化编解码器 */
                             // 解码器(入站): ByteBuf -> RpcRequest
                             ch.pipeline().addLast(new NettySerializerDecoder(serializer, RpcRequest.class));

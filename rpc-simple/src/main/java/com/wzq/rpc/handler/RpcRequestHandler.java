@@ -3,6 +3,7 @@ package com.wzq.rpc.handler;
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
+import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.registry.ServiceRegistry;
@@ -43,35 +44,39 @@ public class RpcRequestHandler {
         // 通过Provider获取目标类（即客户端需要调用的类）
         Object service = SERVICE_PROVIDER.getServiceProvider(rpcRequest.getInterfaceName());
 
-        try {
-            // 反射调用方法
-            result = invokeTargetMethod(rpcRequest, service);
-            logger.info("service:{}, successful invoke method:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            logger.error("occur exception...", e);
-        }
+        // 反射调用方法
+        result = invokeTargetMethod(rpcRequest, service);
+        logger.info("service:{}, successful invoke method:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
 
         return result;
     }
 
     /**
-     * 反射调用方法
+     * 根据 rpcRequest 和 service 对象特定的方法并返回结果
      *
-     * @param rpcRequest 请求体
-     * @param service    服务
+     * @param rpcRequest 客户端发过来的请求
+     * @param service    提供服务的对象
      * @return 方法调用的结果
      */
-    private Object invokeTargetMethod(RpcRequest rpcRequest, Object service) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        // 获取方法
-        Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+    private Object invokeTargetMethod(RpcRequest rpcRequest, Object service) {
+        Object result;
 
-        // 如果方法为空，则返回调用失败
-        if (method == null) {
-            return RpcResponse.fail(RpcResponseCode.NOT_FOUND_METHOD);
+        try {
+            // 获取方法
+            Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+
+            // 如果方法为空，则返回调用失败
+            if (method == null) {
+                return RpcResponse.fail(RpcResponseCode.NOT_FOUND_METHOD);
+            }
+
+            // 反射调用方法
+            result = method.invoke(service, rpcRequest.getParameters());
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            throw new RpcException(e.getMessage(), e);
         }
 
-        // 反射调用方法
-        return method.invoke(service, rpcRequest.getParameters());
+        return result;
     }
 
 }

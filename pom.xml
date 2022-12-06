@@ -33,11 +33,14 @@
         <zookeeper.version>3.5.7</zookeeper.version>
         <curator.framework.version>4.0.1</curator.framework.version>
         <curator.recipes.version>4.0.1</curator.recipes.version>
+
+        <!-- checkstyle -->
+        <checkstyle-maven-plugin.version>3.0.0</checkstyle-maven-plugin.version>
     </properties>
 
     <modules>
-        <module>rpc-simple</module>
         <module>rpc-common</module>
+        <module>rpc-simple</module>
         <module>hello-service-api</module>
         <module>example-client</module>
         <module>example-server</module>
@@ -95,7 +98,38 @@
                     <encoding>${encoding}</encoding>
                 </configuration>
             </plugin>
+
+            <!-- checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle-maven-plugin.version}</version>
+                <configuration>
+                    <configLocation>config/checkstyle.xml</configLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle-maven-plugin.version}</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>

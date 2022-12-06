@@ -21,7 +21,7 @@ public class ServiceProviderImpl implements ServiceProvider {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     /**
-     * 接口名和服务的对应关系，TODO 处理一个接口被两个实现类实现的情况
+     * 接口名和服务的对应关系
      * key: service/interface name
      * value: service
      */
@@ -31,7 +31,7 @@ public class ServiceProviderImpl implements ServiceProvider {
     /**
      * 注册一个service，将这个对象所有实现的接口都注册进去
      * <p>
-     * TODO 修改为扫描注解注册
+     * TODO(scan) 修改为扫描注解注册
      *
      * @param service 服务
      * @param <T>
