@@ -1,6 +1,6 @@
-package com.wzq.rpc.transport.netty.client;
+package com.wzq.rpc.remoting.transport.netty.client;
 
-import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
 import io.netty.channel.ChannelHandlerContext;

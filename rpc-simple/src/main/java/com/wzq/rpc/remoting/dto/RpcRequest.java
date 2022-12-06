@@ -1,4 +1,4 @@
-package com.wzq.rpc.dto;
+package com.wzq.rpc.remoting.dto;
 
 import lombok.*;
 

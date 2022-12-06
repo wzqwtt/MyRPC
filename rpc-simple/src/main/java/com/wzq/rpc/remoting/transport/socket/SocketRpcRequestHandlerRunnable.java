@@ -1,7 +1,7 @@
-package com.wzq.rpc.transport.socket;
+package com.wzq.rpc.remoting.transport.socket;
 
-import com.wzq.rpc.dto.RpcRequest;
-import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.remoting.dto.RpcRequest;
+import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.handler.RpcRequestHandler;
 import com.wzq.rpc.utils.factory.SingletonFactory;
 import lombok.extern.slf4j.Slf4j;

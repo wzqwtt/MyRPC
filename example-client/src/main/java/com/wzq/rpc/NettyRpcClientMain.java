@@ -1,9 +1,8 @@
 package com.wzq.rpc;
 
 import com.wzq.rpc.proxy.RpcClientProxy;
-import com.wzq.rpc.transport.netty.client.NettyClientTransport;
+import com.wzq.rpc.remoting.transport.netty.client.NettyClientTransport;
 
-import java.net.InetSocketAddress;
 import java.util.List;
 
 /**

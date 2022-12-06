@@ -1,4 +1,4 @@
-package com.wzq.rpc.transport.socket;
+package com.wzq.rpc.remoting.transport.socket;
 
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;

@@ -1,6 +1,6 @@
-package com.wzq.rpc.transport;
+package com.wzq.rpc.remoting.transport;
 
-import com.wzq.rpc.dto.RpcRequest;
+import com.wzq.rpc.remoting.dto.RpcRequest;
 
 /**
  * 客户端接口，负责传输{@link RpcRequest}，并返回远程过程调用的结果

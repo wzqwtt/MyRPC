@@ -1,7 +1,7 @@
 package com.wzq.rpc.proxy;
 
-import com.wzq.rpc.dto.RpcRequest;
-import com.wzq.rpc.transport.ClientTransport;
+import com.wzq.rpc.remoting.dto.RpcRequest;
+import com.wzq.rpc.remoting.transport.ClientTransport;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;

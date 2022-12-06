@@ -1,7 +1,5 @@
-package com.wzq.rpc.utils.checker;
+package com.wzq.rpc.remoting.dto;
 
-import com.wzq.rpc.dto.RpcRequest;
-import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;

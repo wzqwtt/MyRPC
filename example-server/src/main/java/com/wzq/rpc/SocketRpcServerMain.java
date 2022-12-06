@@ -1,6 +1,6 @@
 package com.wzq.rpc;
 
-import com.wzq.rpc.transport.socket.SocketRpcServer;
+import com.wzq.rpc.remoting.transport.socket.SocketRpcServer;
 
 /**
  * @author wzq

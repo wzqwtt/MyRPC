@@ -1,10 +1,10 @@
-package com.wzq.rpc.transport.netty.client;
+package com.wzq.rpc.remoting.transport.netty.client;
 
-import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.serialize.Serializer;
 import com.wzq.rpc.serialize.kryo.KryoSerializer;
-import com.wzq.rpc.transport.netty.codec.TestNettySerializerCodec;
+import com.wzq.rpc.remoting.transport.netty.codec.TestNettySerializerCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package com.wzq.rpc.serialize.kryo;
 
-import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.serialize.Serializer;
 import lombok.AllArgsConstructor;

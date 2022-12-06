@@ -1,6 +1,6 @@
 package com.wzq.rpc;
 
-import com.wzq.rpc.transport.netty.server.NettyServer;
+import com.wzq.rpc.remoting.transport.netty.server.NettyServer;
 
 /**
  * Netty服务端测试

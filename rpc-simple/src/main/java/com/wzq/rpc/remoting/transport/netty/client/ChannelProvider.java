@@ -1,4 +1,4 @@
-package com.wzq.rpc.transport.netty.client;
+package com.wzq.rpc.remoting.transport.netty.client;
 
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
@@ -38,18 +38,17 @@ public class ChannelProvider {
 
     /**
      * 获取
+     *
      * @param inetSocketAddress
      * @return
      */
-    public static Channel get(InetSocketAddress inetSocketAddress) {
+    public static Channel get(InetSocketAddress inetSocketAddress) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        try {
-            // 在此处等待客户端连接，如果连接上，这里就不阻塞了
-            connect(bootstrap, inetSocketAddress, countDownLatch);
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            log.error("occur exception when get channel: ", e);
-        }
+
+        // 在此处等待客户端连接，如果连接上，这里就不阻塞了
+        connect(bootstrap, inetSocketAddress, countDownLatch);
+        countDownLatch.await();
+
         return channel;
     }
 

@@ -1,4 +1,4 @@
-package com.wzq.rpc.transport.netty.codec;
+package com.wzq.rpc.remoting.transport.netty.codec.kryo;
 
 import com.wzq.rpc.serialize.Serializer;
 import io.netty.buffer.ByteBuf;

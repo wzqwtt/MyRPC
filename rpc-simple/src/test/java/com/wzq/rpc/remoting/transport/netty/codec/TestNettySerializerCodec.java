@@ -1,9 +1,11 @@
-package com.wzq.rpc.transport.netty.codec;
+package com.wzq.rpc.remoting.transport.netty.codec;
 
-import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.serialize.Serializer;
 import com.wzq.rpc.serialize.kryo.KryoSerializer;
+import com.wzq.rpc.remoting.transport.netty.codec.kryo.NettySerializerDecoder;
+import com.wzq.rpc.remoting.transport.netty.codec.kryo.NettySerializerEncoder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
@@ -82,7 +84,7 @@ public class TestNettySerializerCodec {
                         // 将消息编码
                         NettySerializerEncoder encoder = new NettySerializerEncoder(serializer, RpcResponse.class);
                         ByteBuf buf = ByteBufAllocator.DEFAULT.buffer();
-                        encoder.encode(ctx, msg, buf);
+                        // encoder.encode(ctx, msg, buf);
                         // 打印ByteBuf中的内容
                         log(buf);
                         // 将编码好的消息发送到下游入站处理器
@@ -104,6 +106,8 @@ public class TestNettySerializerCodec {
         // 发送入站消息到rpcResponse
         embeddedChannel.writeInbound(rpcResponse);
     }
+
+
 
     @NoArgsConstructor
     @AllArgsConstructor

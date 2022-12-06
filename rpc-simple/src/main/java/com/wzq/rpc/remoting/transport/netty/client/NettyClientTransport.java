@@ -1,13 +1,11 @@
-package com.wzq.rpc.transport.netty.client;
+package com.wzq.rpc.remoting.transport.netty.client;
 
-import com.wzq.rpc.dto.RpcRequest;
-import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.remoting.dto.RpcRequest;
+import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.registry.ServiceDiscovery;
-import com.wzq.rpc.registry.ServiceRegistry;
 import com.wzq.rpc.registry.ZkServiceDiscovery;
-import com.wzq.rpc.registry.ZkServiceRegistry;
-import com.wzq.rpc.transport.ClientTransport;
-import com.wzq.rpc.utils.checker.RpcMessageChecker;
+import com.wzq.rpc.remoting.transport.ClientTransport;
+import com.wzq.rpc.remoting.dto.RpcMessageChecker;
 import io.netty.channel.*;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;

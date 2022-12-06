@@ -1,7 +1,7 @@
 package com.wzq.rpc.handler;
 
-import com.wzq.rpc.dto.RpcRequest;
-import com.wzq.rpc.dto.RpcResponse;
+import com.wzq.rpc.remoting.dto.RpcRequest;
+import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.provider.ServiceProvider;
@@ -31,16 +31,9 @@ public class RpcRequestHandler {
      * @return 方法调用的结果
      */
     public Object handle(RpcRequest rpcRequest) {
-        Object result = null;
-
         // 通过Provider获取目标类（即客户端需要调用的类）
         Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
-
-        // 反射调用方法
-        result = invokeTargetMethod(rpcRequest, service);
-        log.info("service:{}, successful invoke method:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
-
-        return result;
+        return invokeTargetMethod(rpcRequest, service);
     }
 
     /**

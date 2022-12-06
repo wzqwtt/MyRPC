@@ -1,8 +1,8 @@
 package com.wzq.rpc;
 
 import com.wzq.rpc.proxy.RpcClientProxy;
-import com.wzq.rpc.transport.ClientTransport;
-import com.wzq.rpc.transport.socket.SocketRpcClient;
+import com.wzq.rpc.remoting.transport.ClientTransport;
+import com.wzq.rpc.remoting.transport.socket.SocketRpcClient;
 
 import java.util.List;
 
