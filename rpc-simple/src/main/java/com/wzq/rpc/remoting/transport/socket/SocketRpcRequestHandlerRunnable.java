@@ -3,7 +3,7 @@ package com.wzq.rpc.remoting.transport.socket;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.handler.RpcRequestHandler;
-import com.wzq.rpc.utils.factory.SingletonFactory;
+import com.wzq.rpc.factory.SingletonFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

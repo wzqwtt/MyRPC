@@ -10,7 +10,7 @@ import java.util.concurrent.*;
  * @author wzq
  * @create 2022-12-04 16:17
  */
-public final class ThreadPoolFactory {
+public final class ThreadPoolFactoryUtils {
 
     /**
      * 线程池参数
@@ -20,7 +20,7 @@ public final class ThreadPoolFactory {
     private static final int KEEP_ALIVE_TIME = 1;
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
 
-    private ThreadPoolFactory() {
+    private ThreadPoolFactoryUtils() {
     }
 
     public static ExecutorService createDefaultThreadPool(String threadNamePrefix) {

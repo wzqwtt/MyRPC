@@ -1,6 +1,6 @@
 package com.wzq.rpc.registry;
 
-import com.wzq.rpc.utils.zk.CuratorHelper;
+import com.wzq.rpc.utils.zk.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -18,7 +18,7 @@ public class ZkServiceDiscovery implements ServiceDiscovery {
     public InetSocketAddress lookupService(String serviceName) {
         // TODO(blance) 负载均衡
         // 这里直接取了第一个找到的服务地址
-        String serviceAddress = CuratorHelper.getChildrenNodes(serviceName).get(0);
+        String serviceAddress = CuratorUtils.getChildrenNodes(serviceName).get(0);
         log.info("成功找到服务地址:{}", serviceAddress);
         String[] address = serviceAddress.split(":");
         return new InetSocketAddress(address[0], Integer.parseInt(address[1]));

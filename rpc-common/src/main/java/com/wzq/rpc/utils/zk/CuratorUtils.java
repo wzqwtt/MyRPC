@@ -10,9 +10,9 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @create 2022-12-05 16:40
  */
 @Slf4j
-public class CuratorHelper {
-    
+public class CuratorUtils {
+
     /**
      * 连接重试间隔
      */
@@ -49,12 +49,17 @@ public class CuratorHelper {
      */
     private static Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
 
+    /**
+     * 已注册服务的所有路径
+     */
+    private static Set<String> registeredPathSet = ConcurrentHashMap.newKeySet();
+
     private static CuratorFramework zkClient = getZKClient();
 
     /**
      * 防止其他人创建该类，构造方法私有化
      */
-    private CuratorHelper() {
+    private CuratorUtils() {
     }
 
     /**
@@ -62,7 +67,7 @@ public class CuratorHelper {
      *
      * @return
      */
-    public static CuratorFramework getZKClient() {
+    private static CuratorFramework getZKClient() {
         // 重试连接机制
         ExponentialBackoffRetry retryPolicy = new ExponentialBackoffRetry(BASE_SLEEP_TIME, MAX_RETRIES);
 
@@ -78,25 +83,28 @@ public class CuratorHelper {
     }
 
     /**
-     * 创建临时节点，临时节点驻存在zookeeper种，当链接和session断掉时被删除
+     * 创建永久节点，节点驻存在zookeeper中
      *
-     * @param path     节点路径
+     * @param path 节点路径
      */
-    public static void createEphemeraNode(String path) {
+    public static void createPersistentNode(String path) {
         try {
-            if (zkClient.checkExists().forPath(path) == null) {
-                // 创建临时节点
+            // 当registeredPathSet中存在路径或者zookeeper已经存在路径，则打印节点已存在
+            if (registeredPathSet.contains(path) || zkClient.checkExists().forPath(path) != null) {
+                log.info("节点[{}]已存在", path);
+            } else {
+                // eg: /my-rpc/com.wzq.rpc.HelloService/127.0.0.1:9999
+                // 创建节点
                 zkClient.create()
                         // 递归创建节点
                         .creatingParentsIfNeeded()
-                        // 设置节点的Mode为临时节点
-                        .withMode(CreateMode.EPHEMERAL)
+                        // 设置节点的Mode为永久节点
+                        .withMode(CreateMode.PERSISTENT)
                         // 路径
                         .forPath(path);
                 log.info("节点创建成功，节点为[{}]", path);
-            } else {
-                log.info("节点[{}]已存在", path);
             }
+            registeredPathSet.add(path);
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());
         }
@@ -114,7 +122,7 @@ public class CuratorHelper {
         }
 
         List<String> result;
-        String servicePath = CuratorHelper.ZK_REGISTER_PORT_PATH + "/" + serviceName;
+        String servicePath = CuratorUtils.ZK_REGISTER_PORT_PATH + "/" + serviceName;
 
         try {
             result = zkClient.getChildren().forPath(servicePath);
@@ -135,7 +143,7 @@ public class CuratorHelper {
      * @param serviceName 服务名称
      */
     private static void registerWatcher(CuratorFramework zkClient, String serviceName) {
-        String servicePath = CuratorHelper.ZK_REGISTER_PORT_PATH + "/" + serviceName;
+        String servicePath = CuratorUtils.ZK_REGISTER_PORT_PATH + "/" + serviceName;
 
         PathChildrenCache pathChildrenCache = new PathChildrenCache(zkClient, servicePath, true);
         pathChildrenCache.getListenable()
@@ -151,7 +159,22 @@ public class CuratorHelper {
             pathChildrenCache.start();
         } catch (Exception e) {
             log.error("occur exception:", e);
+            throw new RpcException(e.getMessage(), e.getCause());
         }
+    }
+
+    /**
+     * 清空注册中心的数据
+     */
+    public static void clearRegistry() {
+        registeredPathSet.stream().parallel().forEach(p -> {
+            try {
+                zkClient.delete().forPath(p);
+            } catch (Exception e) {
+                throw new RpcException(e.getMessage(), e.getCause());
+            }
+        });
+        log.info("服务端（Provider）所有注册的服务都被清空:[{}]", registeredPathSet.toString());
     }
 
 }

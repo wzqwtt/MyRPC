@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.transport.netty.server;
 
+import com.wzq.rpc.config.CustomShutdownHook;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.provider.ServiceProvider;
@@ -32,7 +33,7 @@ import java.net.InetSocketAddress;
  */
 @Slf4j
 public class NettyServer {
-    
+
     /**
      * 主机和端口号
      */
@@ -113,6 +114,9 @@ public class NettyServer {
 
             // 绑定端口，同步等待绑定成功
             ChannelFuture channelFuture = b.bind(host, port).sync();
+
+            // 善后工作
+            CustomShutdownHook.getCustomShutdownHook().clearAll();
 
             // 等待服务端监听端口关闭
             channelFuture.channel().closeFuture().sync();

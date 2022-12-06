@@ -5,8 +5,8 @@ import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.handler.RpcRequestHandler;
-import com.wzq.rpc.utils.concurrent.ThreadPoolFactory;
-import com.wzq.rpc.utils.factory.SingletonFactory;
+import com.wzq.rpc.utils.concurrent.ThreadPoolFactoryUtils;
+import com.wzq.rpc.factory.SingletonFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -44,7 +44,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         // 通过单例工厂获得RpcRequest类，用于反射调用RpcRequest里的方法
         this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
         // 获取线程池
-        this.threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
+        this.threadPool = ThreadPoolFactoryUtils.createDefaultThreadPool(THREAD_NAME_PREFIX);
     }
 
     @Override

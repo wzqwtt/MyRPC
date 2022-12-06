@@ -1,4 +1,4 @@
-package com.wzq.rpc.utils.factory;
+package com.wzq.rpc.factory;
 
 import java.util.HashMap;
 import java.util.Map;
