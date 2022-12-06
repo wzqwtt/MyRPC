@@ -4,13 +4,10 @@ import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.registry.ServiceDiscovery;
-import com.wzq.rpc.registry.ServiceRegistry;
 import com.wzq.rpc.registry.ZkServiceDiscovery;
-import com.wzq.rpc.registry.ZkServiceRegistry;
 import com.wzq.rpc.transport.ClientTransport;
 import com.wzq.rpc.utils.checker.RpcMessageChecker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,10 +21,9 @@ import java.net.Socket;
  * @author wzq
  * @create 2022-12-01 21:25
  */
+@Slf4j
 public class SocketRpcClient implements ClientTransport {
-
-    private static final Logger logger = LoggerFactory.getLogger(SocketRpcClient.class);
-
+    
     /**
      * 服务发现
      */
@@ -70,7 +66,7 @@ public class SocketRpcClient implements ClientTransport {
             // 返回响应的结果
             return rpcResponse.getData();
         } catch (IOException | ClassNotFoundException e) {
-            logger.error("occur exception when send RpcRequest");
+            log.error("occur exception when send RpcRequest");
             throw new RpcException("调用服务失败:", e);
         }
 

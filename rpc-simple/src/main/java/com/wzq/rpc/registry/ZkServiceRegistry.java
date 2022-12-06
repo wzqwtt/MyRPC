@@ -1,9 +1,7 @@
 package com.wzq.rpc.registry;
 
 import com.wzq.rpc.utils.zk.CuratorHelper;
-import org.apache.curator.framework.CuratorFramework;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 
@@ -13,10 +11,9 @@ import java.net.InetSocketAddress;
  * @author wzq
  * @create 2022-12-05 19:24
  */
+@Slf4j
 public class ZkServiceRegistry implements ServiceRegistry {
-
-    private static final Logger logger = LoggerFactory.getLogger(ZkServiceRegistry.class);
-
+    
     @Override
     public void registerService(String serviceName, InetSocketAddress inetSocketAddress) {
         // 根节点下注册子节点：服务

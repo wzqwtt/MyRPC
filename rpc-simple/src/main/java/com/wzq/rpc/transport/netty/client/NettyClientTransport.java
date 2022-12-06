@@ -10,8 +10,7 @@ import com.wzq.rpc.transport.ClientTransport;
 import com.wzq.rpc.utils.checker.RpcMessageChecker;
 import io.netty.channel.*;
 import io.netty.util.AttributeKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicReference;
@@ -22,10 +21,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author wzq
  * @create 2022-12-02 22:08
  */
+@Slf4j
 public class NettyClientTransport implements ClientTransport {
-
-    private static final Logger logger = LoggerFactory.getLogger(NettyClientTransport.class);
-
+    
     /**
      * 服务发现
      */
@@ -55,10 +53,10 @@ public class NettyClientTransport implements ClientTransport {
                 // 发送消息
                 channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
                     if (future.isSuccess()) {
-                        logger.info(String.format("client send message: %s", rpcRequest.toString()));
+                        log.info(String.format("client send message: %s", rpcRequest.toString()));
                     } else {
                         future.channel().close();
-                        logger.error("Send failed:", future.cause());
+                        log.error("Send failed:", future.cause());
                     }
                 });
 
@@ -68,7 +66,7 @@ public class NettyClientTransport implements ClientTransport {
                 // 在AttributeKey中获取RpcResponse
                 AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
                 RpcResponse rpcResponse = channel.attr(key).get();
-                logger.info("client get rpcResponse from channel:{}", rpcResponse);
+                log.info("client get rpcResponse from channel:{}", rpcResponse);
 
                 // 校验request和response
                 RpcMessageChecker.check(rpcResponse, rpcRequest);
@@ -80,7 +78,7 @@ public class NettyClientTransport implements ClientTransport {
                 System.exit(0);
             }
         } catch (InterruptedException e) {
-            logger.error("occur exception when connect server: ", e);
+            log.error("occur exception when connect server: ", e);
         }
 
         return result.get();

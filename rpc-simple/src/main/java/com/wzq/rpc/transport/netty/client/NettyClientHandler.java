@@ -7,8 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 自定义的Netty Client入站处理器
@@ -16,10 +15,9 @@ import org.slf4j.LoggerFactory;
  * @author wzq
  * @create 2022-12-03 21:24
  */
+@Slf4j
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
-
-    private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
-
+    
     /**
      * 读取管道中的数据
      *
@@ -34,7 +32,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof RpcResponse) {
             try {
                 RpcResponse rpcResponse = (RpcResponse) msg;
-                logger.info(String.format("client receive msg: %s", rpcResponse));
+                log.info(String.format("client receive msg: %s", rpcResponse));
 
                 // 声明一个AttributeKey对象
                 AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcResponse.getRequestId());
@@ -48,7 +46,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
                 ReferenceCountUtil.release(msg);
             }
         } else {
-            logger.error("不合法的消息被传递");
+            log.error("不合法的消息被传递");
             throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, "不合法的消息被传递");
         }
     }
@@ -62,7 +60,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("client catch exception");
+        log.error("client catch exception");
         cause.printStackTrace();
         ctx.close();
     }

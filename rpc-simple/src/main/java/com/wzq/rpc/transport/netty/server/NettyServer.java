@@ -20,8 +20,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 
@@ -31,10 +30,9 @@ import java.net.InetSocketAddress;
  * @author wzq
  * @create 2022-12-02 20:22
  */
+@Slf4j
 public class NettyServer {
-
-    private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
-
+    
     /**
      * 主机和端口号
      */
@@ -119,7 +117,7 @@ public class NettyServer {
             // 等待服务端监听端口关闭
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("occur exception when start server: ", e);
+            log.error("occur exception when start server: ", e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

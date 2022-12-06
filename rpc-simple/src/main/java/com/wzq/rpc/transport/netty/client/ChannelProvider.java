@@ -5,8 +5,7 @@ import com.wzq.rpc.exception.RpcException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.Date;
@@ -19,9 +18,8 @@ import java.util.concurrent.TimeUnit;
  * @author wzq
  * @create 2022-12-04 21:57
  */
+@Slf4j
 public class ChannelProvider {
-
-    private static final Logger logger = LoggerFactory.getLogger(ChannelProvider.class);
 
     /**
      * 客户端Bootstrap对象，通过{@link NettyClient}获取
@@ -50,7 +48,7 @@ public class ChannelProvider {
             connect(bootstrap, inetSocketAddress, countDownLatch);
             countDownLatch.await();
         } catch (InterruptedException e) {
-            logger.error("occur exception when get channel: ", e);
+            log.error("occur exception when get channel: ", e);
         }
         return channel;
     }
@@ -71,14 +69,14 @@ public class ChannelProvider {
                                 int retry, CountDownLatch countDownLatch) {
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                logger.info("客户端连接成功!");
+                log.info("客户端连接成功!");
                 channel = future.channel();
                 countDownLatch.countDown();
                 return;
             }
 
             if (retry == 0) {
-                logger.error("客户端连接失败: 重试次数已用完，放弃连接!");
+                log.error("客户端连接失败: 重试次数已用完，放弃连接!");
                 countDownLatch.countDown();
                 NettyClient.close();
                 throw new RpcException(RpcErrorMessageEnum.CLIENT_CONNECT_SERVER_FAILURE);
@@ -88,7 +86,7 @@ public class ChannelProvider {
             int order = (MAX_RETRY_COUNT - retry) + 1;
             // 本次重连的间隔
             int delay = 1 << order;
-            logger.error("{}: 连接失败，第 {} 次重连......", new Date(), order);
+            log.error("{}: 连接失败，第 {} 次重连......", new Date(), order);
             bootstrap.config().group().schedule(
                     () -> connect(bootstrap, inetSocketAddress, retry - 1, countDownLatch),
                     delay,

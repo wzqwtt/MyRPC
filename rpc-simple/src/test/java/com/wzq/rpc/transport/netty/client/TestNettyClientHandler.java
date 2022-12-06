@@ -6,18 +6,16 @@ import com.wzq.rpc.serialize.Serializer;
 import com.wzq.rpc.serialize.kryo.KryoSerializer;
 import com.wzq.rpc.transport.netty.codec.TestNettySerializerCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author wzq
  * @create 2022-12-03 21:37
  */
+@Slf4j
 public class TestNettyClientHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(TestNettyClientHandler.class);
-
+    
     /**
      * 序列化器
      */

@@ -2,9 +2,7 @@ package com.wzq.rpc.provider;
 
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
-import com.wzq.rpc.registry.ServiceRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 import java.util.Set;
@@ -16,10 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author wzq
  * @create 2022-12-02 16:39
  */
+@Slf4j
 public class ServiceProviderImpl implements ServiceProvider {
-
-    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
-
+    
     /**
      * 接口名和服务的对应关系
      * key: service/interface name
@@ -50,7 +47,7 @@ public class ServiceProviderImpl implements ServiceProvider {
 
         serviceMap.put(serviceName, service);
 
-        logger.info("Add service: {} and interfaces {}", serviceName, service.getClass().getInterfaces());
+        log.info("Add service: {} and interfaces {}", serviceName, service.getClass().getInterfaces());
     }
 
     /**

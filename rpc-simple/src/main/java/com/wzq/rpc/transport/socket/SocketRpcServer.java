@@ -5,8 +5,7 @@ import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.registry.ServiceRegistry;
 import com.wzq.rpc.registry.ZkServiceRegistry;
 import com.wzq.rpc.utils.concurrent.ThreadPoolFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,10 +19,9 @@ import java.util.concurrent.*;
  * @author wzq
  * @create 2022-12-01 22:17
  */
+@Slf4j
 public class SocketRpcServer {
-
-    private static final Logger logger = LoggerFactory.getLogger(SocketRpcServer.class);
-
+    
     /**
      * 线程池
      */
@@ -82,17 +80,17 @@ public class SocketRpcServer {
         // 启动服务端
         try (ServerSocket server = new ServerSocket()) {
             server.bind(new InetSocketAddress(host, port));
-            logger.info("server starts...");
+            log.info("server starts...");
             Socket socket;
 
             // 阻塞等待客户端连接
             while ((socket = server.accept()) != null) {
-                logger.info("client connected");
+                log.info("client connected");
                 // 当有客户端连接，使用线程池执行任务
                 threadPool.execute(new SocketRpcRequestHandlerRunnable(socket));
             }
         } catch (IOException e) {
-            logger.error("occur IOException:", e);
+            log.error("occur IOException:", e);
         } finally {
             // 关闭线程池
             threadPool.shutdown();

@@ -1,6 +1,7 @@
 package com.wzq.rpc.utils.zk;
 
 import com.wzq.rpc.exception.RpcException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
@@ -8,8 +9,6 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,10 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author wzq
  * @create 2022-12-05 16:40
  */
+@Slf4j
 public class CuratorHelper {
-
-    private static final Logger logger = LoggerFactory.getLogger(CuratorHelper.class);
-
+    
     /**
      * 连接重试间隔
      */
@@ -95,9 +93,9 @@ public class CuratorHelper {
                         .withMode(CreateMode.EPHEMERAL)
                         // 路径
                         .forPath(path);
-                logger.info("节点创建成功，节点为[{}]", path);
+                log.info("节点创建成功，节点为[{}]", path);
             } else {
-                logger.info("节点[{}]已存在", path);
+                log.info("节点[{}]已存在", path);
             }
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());
@@ -152,7 +150,7 @@ public class CuratorHelper {
         try {
             pathChildrenCache.start();
         } catch (Exception e) {
-            logger.error("occur exception:", e);
+            log.error("occur exception:", e);
         }
     }
 

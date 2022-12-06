@@ -6,8 +6,7 @@ import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,10 +17,8 @@ import java.lang.reflect.Method;
  * @author wzq
  * @create 2022-12-02 17:01
  */
+@Slf4j
 public class RpcRequestHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(RpcRequestHandler.class);
-
     /**
      * 注册中心
      */
@@ -41,7 +38,7 @@ public class RpcRequestHandler {
 
         // 反射调用方法
         result = invokeTargetMethod(rpcRequest, service);
-        logger.info("service:{}, successful invoke method:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
+        log.info("service:{}, successful invoke method:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
 
         return result;
     }

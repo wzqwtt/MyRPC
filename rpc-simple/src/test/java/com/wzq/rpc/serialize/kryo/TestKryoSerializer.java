@@ -6,9 +6,8 @@ import com.wzq.rpc.serialize.Serializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 测试KryoSerializer类
@@ -16,10 +15,9 @@ import org.slf4j.LoggerFactory;
  * @author wzq
  * @create 2022-12-03 14:06
  */
+@Slf4j
 public class TestKryoSerializer {
-
-    private static final Logger logger = LoggerFactory.getLogger(TestKryoSerializer.class);
-
+    
     private Serializer kryoSerializer = new KryoSerializer();
 
     @Data
@@ -43,11 +41,11 @@ public class TestKryoSerializer {
 
         // 序列化
         byte[] serializeBytes = kryoSerializer.serialize(rpcResponse);
-        logger.info("serializeBytes length = {}", serializeBytes.length);
+        log.info("serializeBytes length = {}", serializeBytes.length);
 
         // 反序列化
         RpcResponse deserialize = kryoSerializer.deserialize(serializeBytes, RpcResponse.class);
-        logger.info(deserialize.toString());
+        log.info(deserialize.toString());
     }
 
 }

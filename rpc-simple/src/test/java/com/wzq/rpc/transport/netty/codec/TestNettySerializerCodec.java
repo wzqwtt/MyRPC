@@ -13,9 +13,8 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static io.netty.buffer.ByteBufUtil.appendPrettyHexDump;
 import static io.netty.util.internal.StringUtil.NEWLINE;
@@ -26,10 +25,9 @@ import static io.netty.util.internal.StringUtil.NEWLINE;
  * @author wzq
  * @create 2022-12-03 16:56
  */
+@Slf4j
 public class TestNettySerializerCodec {
-
-    private static final Logger logger = LoggerFactory.getLogger(TestNettySerializerCodec.class);
-
+    
     /**
      * 序列化器
      */
@@ -63,8 +61,8 @@ public class TestNettySerializerCodec {
 
         // 手动序列化rpcResponse
         byte[] serialize = serializer.serialize(rpcResponse);
-        logger.debug("data: {}", serialize);
-        logger.debug("data length: {}", serialize.length);
+        log.debug("data: {}", serialize);
+        log.debug("data length: {}", serialize.length);
 
         // 发送出站数据到EmbeddedChannel
         embeddedChannel.writeOutbound(rpcResponse);
@@ -97,8 +95,8 @@ public class TestNettySerializerCodec {
                 new ChannelInboundHandlerAdapter() {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                        logger.debug("类型: {}", msg.getClass());
-                        logger.debug("{}", msg);
+                        log.debug("类型: {}", msg.getClass());
+                        log.debug("{}", msg);
                     }
                 }
         );

@@ -7,8 +7,7 @@ import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.exception.SerializeException;
 import com.wzq.rpc.serialize.Serializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,10 +18,9 @@ import java.io.ByteArrayOutputStream;
  * @author wzq
  * @create 2022-12-02 22:20
  */
+@Slf4j
 public class KryoSerializer implements Serializer {
-
-    private static final Logger logger = LoggerFactory.getLogger(KryoSerializer.class);
-
+    
     /**
      * 由于Kryo不是线程安全的。每个线程都应该有自己的Kryo，Input和Output实例
      * 所以，使用ThreadLocal存放Kryo对象
@@ -55,7 +53,7 @@ public class KryoSerializer implements Serializer {
             kryoThreadLocal.remove();
             return output.toBytes();
         } catch (Exception e) {
-            logger.error("occur exception when serialize:", e);
+            log.error("occur exception when serialize:", e);
             throw new SerializeException("序列化失败！");
         }
     }
@@ -71,7 +69,7 @@ public class KryoSerializer implements Serializer {
             kryoThreadLocal.remove();
             return clazz.cast(obj);
         } catch (Exception e) {
-            logger.error("occur exception when deserialize: ", e);
+            log.error("occur exception when deserialize: ", e);
             throw new SerializeException("反序列化失败！");
         }
     }

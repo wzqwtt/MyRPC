@@ -2,8 +2,7 @@ package com.wzq.rpc.proxy;
 
 import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.transport.ClientTransport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -16,10 +15,9 @@ import java.util.UUID;
  * @author wzq
  * @create 2022-12-01 22:17
  */
+@Slf4j
 public class RpcClientProxy implements InvocationHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
-
+    
     /**
      * 用于发送请求给服务端，对应socket、Netty两种实现方式
      */
@@ -58,7 +56,7 @@ public class RpcClientProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-        logger.info("Call invoke method and invoked method: {}", method.getName());
+        log.info("Call invoke method and invoked method: {}", method.getName());
 
         // 封装RpcRequest
         RpcRequest rpcRequest = RpcRequest.builder()

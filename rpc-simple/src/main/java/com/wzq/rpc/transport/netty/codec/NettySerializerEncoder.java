@@ -5,8 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Netty序列化编码器
@@ -15,10 +14,9 @@ import org.slf4j.LoggerFactory;
  * @create 2022-12-03 16:28
  */
 @AllArgsConstructor
+@Slf4j
 public class NettySerializerEncoder extends MessageToByteEncoder {
-
-    private static final Logger logger = LoggerFactory.getLogger(NettySerializerEncoder.class);
-
+    
     /**
      * 序列化器
      */

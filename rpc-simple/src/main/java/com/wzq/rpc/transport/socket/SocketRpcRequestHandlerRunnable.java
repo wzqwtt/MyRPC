@@ -4,8 +4,7 @@ import com.wzq.rpc.dto.RpcRequest;
 import com.wzq.rpc.dto.RpcResponse;
 import com.wzq.rpc.handler.RpcRequestHandler;
 import com.wzq.rpc.utils.factory.SingletonFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,10 +18,9 @@ import java.net.Socket;
  * @author wzq
  * @create 2022-12-02 16:33
  */
+@Slf4j
 public class SocketRpcRequestHandlerRunnable implements Runnable {
-
-    private static final Logger logger = LoggerFactory.getLogger(SocketRpcRequestHandlerRunnable.class);
-
+    
     /**
      * 客户端来的Socket
      */
@@ -44,7 +42,7 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
      */
     @Override
     public void run() {
-        logger.info("server handler message from client by thread {}", Thread.currentThread().getName());
+        log.info("server handler message from client by thread {}", Thread.currentThread().getName());
         try (
                 // 入站流对象
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -61,7 +59,7 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
             objectOutputStream.writeObject(RpcResponse.success(result, rpcRequest.getRequestId()));
             objectOutputStream.flush();
         } catch (IOException | ClassNotFoundException e) {
-            logger.error("occur exception:", e);
+            log.error("occur exception:", e);
         }
     }
 }

@@ -3,9 +3,8 @@ package com.wzq.rpc.serialize.kryo;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,10 +16,9 @@ import java.io.FileOutputStream;
  * @author wzq
  * @create 2022-12-03 10:34
  */
+@Slf4j
 public class KryoLearn {
-
-    private static final Logger logger = LoggerFactory.getLogger(KryoLearn.class);
-
+    
     public static class SomeClass {
         String value;
     }
@@ -52,7 +50,7 @@ public class KryoLearn {
             SomeClass someClass = kryo.readObject(input, SomeClass.class);
             input.close();
 
-            logger.info(someClass.value);
+            log.info(someClass.value);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package com.wzq.rpc.utils.zk;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.BackgroundCallback;
@@ -14,8 +15,6 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -30,10 +29,9 @@ import java.util.concurrent.TimeUnit;
  * @author wzq
  * @create 2022-12-05 15:04
  */
+@Slf4j
 public class CuratorLearn {
-
-    private static final Logger logger = LoggerFactory.getLogger(CuratorLearn.class);
-
+    
     private CuratorFramework client;
     private final String connectString = "localhost:2181";
     private final int sessionTimeoutMs = 5000;
@@ -64,14 +62,14 @@ public class CuratorLearn {
 
         // 开启客户端
         client.start();
-        logger.info("client state: {}", client.getState());
+        log.info("client state: {}", client.getState());
     }
 
     @After
     public void closeZK() {
         // 关闭客户端
         client.close();
-        logger.info("client state: {}", client.getState());
+        log.info("client state: {}", client.getState());
     }
 
     /**
@@ -86,7 +84,7 @@ public class CuratorLearn {
                 .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
                 // 在namespace节点下，创建节点node，存入的数据是"test/node1"的字节数组
                 .forPath("/node1", "test/node1".getBytes());
-        logger.info("/test/node1被创建");
+        log.info("/test/node1被创建");
     }
 
     /**
@@ -100,7 +98,7 @@ public class CuratorLearn {
                 .withMode(CreateMode.PERSISTENT)
                 .withACL(acl)
                 .forPath("/node2", "test/node2".getBytes());
-        logger.info("/test/node2被创建");
+        log.info("/test/node2被创建");
     }
 
     /**
@@ -114,7 +112,7 @@ public class CuratorLearn {
                 .withMode(CreateMode.PERSISTENT)
                 .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
                 .forPath("/node3/subnode", "node3/subnode".getBytes());
-        logger.info("/node3/subnode被创建");
+        log.info("/node3/subnode被创建");
     }
 
     /**
@@ -131,20 +129,20 @@ public class CuratorLearn {
                     @Override
                     public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
                         // true，此处的curatorFramework即为之前创建的client
-                        logger.info("curatorFramework == client : {}", curatorFramework == client);
+                        log.info("curatorFramework == client : {}", curatorFramework == client);
                         // 0表示创建成功
-                        logger.info("getResultCode(): {}", curatorEvent.getResultCode());
+                        log.info("getResultCode(): {}", curatorEvent.getResultCode());
                         // 获取操作类型 CREATE
-                        logger.info("getType(): {}", curatorEvent.getType().toString());
+                        log.info("getType(): {}", curatorEvent.getType().toString());
                         // 获取节点路径
-                        logger.info("getPath(): {}", curatorEvent.getPath());
+                        log.info("getPath(): {}", curatorEvent.getPath());
                     }
                 })
                 .forPath("/node4/subnote", "/node4/subnote".getBytes());
 
         // 在main线程打印一些内容
         for (int i = 0; i < 10; i++) {
-            logger.info("计数: {}", i);
+            log.info("计数: {}", i);
             try {
                 TimeUnit.MILLISECONDS.sleep(10);
             } catch (InterruptedException e) {
@@ -160,7 +158,7 @@ public class CuratorLearn {
     public void testUpdate1() throws Exception {
         client.setData()
                 .forPath("/node1", "update node1".getBytes());
-        logger.info("更新{}/node1", namespace);
+        log.info("更新{}/node1", namespace);
     }
 
     /**
@@ -172,7 +170,7 @@ public class CuratorLearn {
                 // 带有版本号
                 .withVersion(1)
                 .forPath("/node1", "testUpdate2".getBytes());
-        logger.info("带有版本号更新{}/node1", namespace);
+        log.info("带有版本号更新{}/node1", namespace);
     }
 
     /**
@@ -187,17 +185,17 @@ public class CuratorLearn {
                     @Override
                     public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
                         // true，此处的curatorFramework即为之前创建的client
-                        logger.info("curatorFramework == client : {}", curatorFramework == client);
+                        log.info("curatorFramework == client : {}", curatorFramework == client);
                         // 0表示创建成功
-                        logger.info("getResultCode(): {}", curatorEvent.getResultCode());
+                        log.info("getResultCode(): {}", curatorEvent.getResultCode());
                         // 获取操作类型 CREATE
-                        logger.info("getType(): {}", curatorEvent.getType().toString());
+                        log.info("getType(): {}", curatorEvent.getType().toString());
                         // 获取节点路径
-                        logger.info("getPath(): {}", curatorEvent.getPath());
+                        log.info("getPath(): {}", curatorEvent.getPath());
                     }
                 })
                 .forPath("/node1", "testUpdate3".getBytes());
-        logger.info("带有版本号更新{}/node1", namespace);
+        log.info("带有版本号更新{}/node1", namespace);
     }
 
     /**
@@ -207,7 +205,7 @@ public class CuratorLearn {
     public void testDelete1() throws Exception {
         client.delete()
                 .forPath("/node1");
-        logger.info("删除节点{}/node1", namespace);
+        log.info("删除节点{}/node1", namespace);
     }
 
     /**
@@ -218,7 +216,7 @@ public class CuratorLearn {
         client.delete()
                 .deletingChildrenIfNeeded()
                 .forPath("/node3/subnode");
-        logger.info("删除节点{}/node3/subnode", namespace);
+        log.info("删除节点{}/node3/subnode", namespace);
     }
 
     /**
@@ -233,12 +231,12 @@ public class CuratorLearn {
                 .inBackground(new BackgroundCallback() {
                     @Override
                     public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
-                        logger.info("{}", curatorEvent.getType());  // DELETE
-                        logger.info("{}", curatorEvent.getPath());  // /node1
+                        log.info("{}", curatorEvent.getType());  // DELETE
+                        log.info("{}", curatorEvent.getPath());  // /node1
                     }
                 })
                 .forPath("/node4/subnote");
-        logger.info("删除结束");
+        log.info("删除结束");
     }
 
     /**
@@ -248,7 +246,7 @@ public class CuratorLearn {
     public void testGet1() throws Exception {
         byte[] bytes = client.getData()
                 .forPath("/node1");
-        logger.info("/node1数据：{}", new String(bytes));
+        log.info("/node1数据：{}", new String(bytes));
     }
 
     /**
@@ -260,7 +258,7 @@ public class CuratorLearn {
         byte[] bytes = client.getData()
                 .storingStatIn(stat)
                 .forPath("/node1");
-        logger.info("/node1数据：{}, version: {}", new String(bytes), stat.getVersion());
+        log.info("/node1数据：{}, version: {}", new String(bytes), stat.getVersion());
     }
 
     /**
@@ -274,9 +272,9 @@ public class CuratorLearn {
                 .inBackground(new BackgroundCallback() {
                     @Override
                     public void processResult(CuratorFramework curatorFramework, CuratorEvent curatorEvent) throws Exception {
-                        logger.info(new String(curatorEvent.getData()));  // 4134134
-                        logger.info(curatorEvent.getStat().toString());  // 21474836566,21474836566,1620042863998,1620042863998,0,0,0,0,7,0,21474836566
-                        logger.info(curatorEvent.getType().toString());  // GET_DATA
+                        log.info(new String(curatorEvent.getData()));  // 4134134
+                        log.info(curatorEvent.getStat().toString());  // 21474836566,21474836566,1620042863998,1620042863998,0,0,0,0,7,0,21474836566
+                        log.info(curatorEvent.getType().toString());  // GET_DATA
                     }
                 })
                 .forPath("/node1");
@@ -291,7 +289,7 @@ public class CuratorLearn {
     public void testChildren1() throws Exception {
         List<String> children = client.getChildren()
                 .forPath("/");
-        logger.info(children.toString());
+        log.info(children.toString());
     }
 
     /**
@@ -303,9 +301,9 @@ public class CuratorLearn {
                 .inBackground(new BackgroundCallback() {
                     @Override
                     public void processResult(CuratorFramework client, CuratorEvent event) throws Exception {
-                        logger.info(event.getPath());
-                        logger.info(event.getType().toString());
-                        logger.info(event.getChildren().toString());
+                        log.info(event.getPath());
+                        log.info(event.getType().toString());
+                        log.info(event.getChildren().toString());
                     }
                 })
                 .forPath("/");
@@ -320,9 +318,9 @@ public class CuratorLearn {
                 .forPath("/node");
 
         if (stat != null) {
-            logger.info(stat.toString());
+            log.info(stat.toString());
         } else {
-            logger.info("节点不存在");
+            log.info("节点不存在");
         }
     }
 
@@ -334,9 +332,9 @@ public class CuratorLearn {
                     public void processResult(CuratorFramework curatorFramework, CuratorEvent event) throws Exception {
                         Stat stat = event.getStat();
                         if (stat != null) {
-                            logger.info(stat.toString());
+                            log.info(stat.toString());
                         } else {
-                            logger.info("节点不存在");
+                            log.info("节点不存在");
                         }
                     }
                 })
@@ -372,10 +370,10 @@ public class CuratorLearn {
                     public void nodeChanged() throws Exception {
                         ChildData currentData = nodeCache.getCurrentData();
                         if (currentData != null) {
-                            logger.info("{}", currentData.getPath());
-                            logger.info(new String(currentData.getData()));
+                            log.info("{}", currentData.getPath());
+                            log.info(new String(currentData.getData()));
                         } else {
-                            logger.info("节点不存在");
+                            log.info("节点不存在");
                         }
                     }
                 });
@@ -398,11 +396,11 @@ public class CuratorLearn {
                 .addListener(new PathChildrenCacheListener() {
                     @Override
                     public void childEvent(CuratorFramework curatorFramework, PathChildrenCacheEvent pathChildrenCacheEvent) throws Exception {
-                        logger.info("{}", pathChildrenCacheEvent.getType());
-                        logger.info("{}", pathChildrenCacheEvent.getData().toString());
-                        logger.info("{}", new String(pathChildrenCacheEvent.getData().getData()));
-                        logger.info("{}", pathChildrenCacheEvent.getData().getPath());
-                        logger.info("{}", pathChildrenCacheEvent.getData().getStat().toString());
+                        log.info("{}", pathChildrenCacheEvent.getType());
+                        log.info("{}", pathChildrenCacheEvent.getData().toString());
+                        log.info("{}", new String(pathChildrenCacheEvent.getData().getData()));
+                        log.info("{}", pathChildrenCacheEvent.getData().getPath());
+                        log.info("{}", pathChildrenCacheEvent.getData().getStat().toString());
                     }
                 });
         // 在这里睡1分钟，然后自己手动操作这个节点
