@@ -7,13 +7,15 @@ import com.wzq.rpc.serialize.kryo.KryoSerializer;
 import com.wzq.rpc.remoting.transport.netty.codec.kryo.NettySerializerDecoder;
 import com.wzq.rpc.remoting.transport.netty.codec.kryo.NettySerializerEncoder;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 用于初始化和关闭Bootstrap对象
@@ -23,14 +25,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class NettyClient {
-    
-    /**
-     * 私有化构造方法
-     */
-    private NettyClient() {
-    }
 
-    private static final Bootstrap b;
+    private static final Bootstrap bootstrap;
     private static final EventLoopGroup eventLoopGroup;
 
     // 初始化相关资源，比如:EventLoopGroup、BootStrap
@@ -42,10 +38,16 @@ public final class NettyClient {
         Serializer serializer = new KryoSerializer();
 
         // BootStrap配置
-        b = new Bootstrap();
-        b.group(eventLoopGroup)
+        bootstrap = new Bootstrap();
+        bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
+                // 是否开启TCP底层心跳机制
                 .option(ChannelOption.SO_KEEPALIVE, true)
+                // 连接的超时时间，超过这个时间还是建立不上连接的话代表连接失败
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+                // TCP默认开启了Nagle算法，该算法的作用是尽可能发送大数据块，减少网络传输。
+                // TCP_NODELAY参数的作用就是控制是否启用Nagle算法
+                .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
@@ -60,13 +62,20 @@ public final class NettyClient {
                 });
     }
 
-    /**
-     * 获取BootStrap
-     *
-     * @return 返回BootStrap
-     */
-    public static Bootstrap getBootstrap() {
-        return b;
+    @SneakyThrows
+    public Channel doConnect(InetSocketAddress inetSocketAddress) {
+        CompletableFuture<Channel> completableFuture = new CompletableFuture<>();
+
+        bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
+            if (future.isSuccess()) {
+                log.info("客户端连接成功!");
+                completableFuture.complete(future.channel());
+            } else {
+                throw new IllegalStateException();
+            }
+        });
+
+        return completableFuture.get();
     }
 
     /**

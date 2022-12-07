@@ -47,34 +47,28 @@ public class NettyClientTransport implements ClientTransport {
         // 构建返回值
         CompletableFuture<RpcResponse> resultFuture = new CompletableFuture<>();
 
-        try {
-            // 发现服务，找到所请求服务的地址
-            InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
-            // 获取Channel
-            Channel channel = ChannelProvider.get(inetSocketAddress);
+        // 发现服务，找到所请求服务的地址
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
+        // 获取Channel
+        Channel channel = ChannelProvider.get(inetSocketAddress);
 
-            if (channel != null && channel.isActive()) {
-                // 放入未处理的请求
-                unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
+        if (channel != null && channel.isActive()) {
+            // 放入未处理的请求
+            unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
 
-                // 发送消息
-                channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
-                    if (future.isSuccess()) {
-                        log.info(String.format("client send message: %s", rpcRequest));
-                    } else {
-                        future.channel().close();
-                        // 如果任务没有执行成功，在resultFuture中放入异常
-                        resultFuture.completeExceptionally(future.cause());
-                        log.error("Send failed:", future.cause());
-                    }
-                });
-            } else {
-                throw new IllegalStateException();
-            }
-        } catch (InterruptedException e) {
-            unprocessedRequests.remove(rpcRequest.getRequestId());
-            log.error(e.getMessage(), e);
-            Thread.currentThread().interrupt();
+            // 发送消息
+            channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
+                if (future.isSuccess()) {
+                    log.info(String.format("client send message: %s", rpcRequest));
+                } else {
+                    future.channel().close();
+                    // 如果任务没有执行成功，在resultFuture中放入异常
+                    resultFuture.completeExceptionally(future.cause());
+                    log.error("Send failed:", future.cause());
+                }
+            });
+        } else {
+            throw new IllegalStateException();
         }
 
         return resultFuture;
