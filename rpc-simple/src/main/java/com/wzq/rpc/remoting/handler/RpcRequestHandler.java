@@ -1,4 +1,4 @@
-package com.wzq.rpc.handler;
+package com.wzq.rpc.remoting.handler;
 
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;

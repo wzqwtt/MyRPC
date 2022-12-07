@@ -3,7 +3,7 @@ package com.wzq.rpc.remoting.transport.netty.server;
 import com.wzq.rpc.enumeration.RpcMessageTypeEnum;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
-import com.wzq.rpc.handler.RpcRequestHandler;
+import com.wzq.rpc.remoting.handler.RpcRequestHandler;
 import com.wzq.rpc.factory.SingletonFactory;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
