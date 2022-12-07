@@ -5,7 +5,7 @@ import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.registry.ServiceRegistry;
 import com.wzq.rpc.registry.ZkServiceRegistry;
-import com.wzq.rpc.utils.concurrent.ThreadPoolFactoryUtils;
+import com.wzq.rpc.utils.concurrent.threadpool.ThreadPoolFactoryUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class SocketRpcServer {
 
     public SocketRpcServer(String host, int port) {
         // 使用抽象出去的线程池工厂类创建线程池
-        threadPool = ThreadPoolFactoryUtils.createDefaultThreadPool(THREAD_NAME_PREFIX);
+        threadPool = ThreadPoolFactoryUtils.createCustomThreadPoolIfAbsent(THREAD_NAME_PREFIX);
 
         this.host = host;
         this.port = port;

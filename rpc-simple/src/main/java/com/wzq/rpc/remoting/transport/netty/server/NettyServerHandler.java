@@ -5,9 +5,9 @@ import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.handler.RpcRequestHandler;
-import com.wzq.rpc.utils.concurrent.ThreadPoolFactoryUtils;
+import com.wzq.rpc.utils.concurrent.threadpool.CustomThreadPoolConfig;
+import com.wzq.rpc.utils.concurrent.threadpool.ThreadPoolFactoryUtils;
 import com.wzq.rpc.factory.SingletonFactory;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -44,7 +44,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         // 通过单例工厂获得RpcRequest类，用于反射调用RpcRequest里的方法
         this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
         // 获取线程池
-        this.threadPool = ThreadPoolFactoryUtils.createDefaultThreadPool(THREAD_NAME_PREFIX);
+        CustomThreadPoolConfig customThreadPoolConfig = new CustomThreadPoolConfig();
+        customThreadPoolConfig.setCorePoolSize(6);
+        this.threadPool = ThreadPoolFactoryUtils.createCustomThreadPoolIfAbsent(THREAD_NAME_PREFIX, customThreadPoolConfig);
     }
 
     @Override
@@ -65,7 +67,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
                     if (ctx.channel().isActive() && ctx.channel().isWritable()) {
                         // 返回方法执行结果给客户端
-                        ctx.writeAndFlush(RpcResponse.success(result, rpcRequest.getRequestId()));
+                        RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
+                        ctx.writeAndFlush(rpcResponse).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
                     } else {
                         log.error("not writable now, message dropped");
                     }

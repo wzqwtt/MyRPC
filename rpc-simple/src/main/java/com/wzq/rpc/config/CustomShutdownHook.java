@@ -1,6 +1,6 @@
 package com.wzq.rpc.config;
 
-import com.wzq.rpc.utils.concurrent.ThreadPoolFactoryUtils;
+import com.wzq.rpc.utils.concurrent.threadpool.ThreadPoolFactoryUtils;
 import com.wzq.rpc.utils.zk.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +15,6 @@ import java.util.concurrent.ExecutorService;
 @Slf4j
 public class CustomShutdownHook {
 
-    private final ExecutorService threadPool = ThreadPoolFactoryUtils.createDefaultThreadPool("custom-shutdown-hook-rpc-pool");
-
     private static final CustomShutdownHook CUSTOM_SHUTDOWN_HOOK = new CustomShutdownHook();
 
     public static CustomShutdownHook getCustomShutdownHook() {
@@ -28,7 +26,7 @@ public class CustomShutdownHook {
         // 在JVM销毁前执行一个线程
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             CuratorUtils.clearRegistry();
-            threadPool.shutdown();
+            ThreadPoolFactoryUtils.shutDownAllThreadPool();
         }));
     }
 }

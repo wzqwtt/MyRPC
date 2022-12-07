@@ -37,23 +37,23 @@ public class NettyServer {
     /**
      * 主机和端口号
      */
-    private final String host;
-    private final int port;
+    private String host;
+    private int port;
 
     /**
      * 注册中心
      */
-    private final ServiceRegistry serviceRegistry;
+    private ServiceRegistry serviceRegistry;
 
     /**
      * 服务的Provider
      */
-    private final ServiceProvider serviceProvider;
+    private ServiceProvider serviceProvider;
 
     /**
      * 序列化器
      */
-    private final Serializer serializer;
+    private Serializer serializer;
 
     public NettyServer(String host, int port) {
         this.host = host;
@@ -84,6 +84,9 @@ public class NettyServer {
     }
 
     public void start() {
+        // 善后工作
+        CustomShutdownHook.getCustomShutdownHook().clearAll();
+
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -116,14 +119,12 @@ public class NettyServer {
             // 绑定端口，同步等待绑定成功
             ChannelFuture channelFuture = b.bind(host, port).sync();
 
-            // 善后工作
-            CustomShutdownHook.getCustomShutdownHook().clearAll();
-
             // 等待服务端监听端口关闭
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("occur exception when start server: ", e);
         } finally {
+            log.error("shutdown bossGroup and workGroup");
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
