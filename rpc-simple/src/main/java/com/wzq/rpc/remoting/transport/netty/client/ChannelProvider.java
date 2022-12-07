@@ -40,7 +40,7 @@ public final class ChannelProvider {
     public static Channel get(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
 
-        // 如果已经有可用连接就直接获取
+        // 判断与该服务端的连接是否存在，如果存在就可以直接连接
         if (channels.containsKey(key)) {
             Channel channel = channels.get(key);
             if (channel != null && channel.isActive()) {

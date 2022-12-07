@@ -2,6 +2,7 @@ package com.wzq.rpc.remoting.transport.netty.client;
 
 import com.wzq.rpc.remoting.dto.RpcResponse;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +17,7 @@ public class UnprocessedRequests {
     /**
      * 记录消息和CompletableFuture的集合
      */
-    private static ConcurrentHashMap<String, CompletableFuture<RpcResponse>> unprocessedResponseFutures = new ConcurrentHashMap<>();
+    private static Map<String, CompletableFuture<RpcResponse>> unprocessedResponseFutures = new ConcurrentHashMap<>();
 
     /**
      * 放入未处理的消息

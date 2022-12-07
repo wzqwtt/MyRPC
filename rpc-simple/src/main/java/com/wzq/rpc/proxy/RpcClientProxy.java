@@ -1,5 +1,6 @@
 package com.wzq.rpc.proxy;
 
+import com.wzq.rpc.remoting.dto.RpcMessageChecker;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.remoting.transport.ClientTransport;
@@ -63,7 +64,7 @@ public class RpcClientProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
 
-        log.info("Call invoke method and invoked method: {}", method.getName());
+        log.info("invoke method: [{}]", method.getName());
 
         // 封装RpcRequest
         RpcRequest rpcRequest = RpcRequest.builder()
@@ -75,19 +76,21 @@ public class RpcClientProxy implements InvocationHandler {
                 .requestId(UUID.randomUUID().toString())
                 .build();
 
-        Object result = null;
+        RpcResponse rpcResponse = null;
 
         // 发送RpcRequest请求，并返回远程调用的结果
         if (clientTransport instanceof NettyClientTransport) {
             CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>) clientTransport.sendRpcRequest(rpcRequest);
             // 在这里阻塞了，等待服务端返回结果，然后交给NettyClientHandler处理，设置该completableFuture的result
-            result = completableFuture.get().getData();
+            rpcResponse = completableFuture.get();
         }
 
         if (clientTransport instanceof SocketRpcClient) {
-            RpcResponse rpcResponse = (RpcResponse) clientTransport.sendRpcRequest(rpcRequest);
-            result = rpcResponse.getData();
+            rpcResponse = (RpcResponse) clientTransport.sendRpcRequest(rpcRequest);
         }
-        return result;
+        // 校验RpcRequest和RpcResponse
+        RpcMessageChecker.check(rpcResponse, rpcRequest);
+
+        return rpcResponse.getData();
     }
 }
