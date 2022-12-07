@@ -11,11 +11,15 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用于初始化和关闭Bootstrap对象
@@ -41,16 +45,16 @@ public final class NettyClient {
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
-                // 是否开启TCP底层心跳机制
-                .option(ChannelOption.SO_KEEPALIVE, true)
+                // 添加打印信息的Handler
+                .handler(new LoggingHandler(LogLevel.INFO))
                 // 连接的超时时间，超过这个时间还是建立不上连接的话代表连接失败
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                // TCP默认开启了Nagle算法，该算法的作用是尽可能发送大数据块，减少网络传输。
-                // TCP_NODELAY参数的作用就是控制是否启用Nagle算法
-                .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        // 心跳检测Handler
+                        // 如果15秒内没有发送数据给服务端的话，就发送一次心跳
+                        ch.pipeline().addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS));
                         // 添加自定义的序列化编解码器
                         // 解码器(入站): byteBuf -> RpcResponse
                         ch.pipeline().addLast(new NettySerializerDecoder(serializer, RpcResponse.class));

@@ -56,4 +56,10 @@ public final class ChannelProvider {
         return channel;
     }
 
+    public static void remove(InetSocketAddress inetSocketAddress) {
+        String key = inetSocketAddress.toString();
+        channels.remove(key);
+        log.info("Channel map size :[{}]", channels.size());
+    }
+
 }

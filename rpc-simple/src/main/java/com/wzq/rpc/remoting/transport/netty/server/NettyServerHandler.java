@@ -1,20 +1,17 @@
 package com.wzq.rpc.remoting.transport.netty.server;
 
+import com.wzq.rpc.enumeration.RpcMessageTypeEnum;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
-import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
-import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.handler.RpcRequestHandler;
-import com.wzq.rpc.utils.concurrent.threadpool.CustomThreadPoolConfig;
-import com.wzq.rpc.utils.concurrent.threadpool.ThreadPoolFactoryUtils;
 import com.wzq.rpc.factory.SingletonFactory;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * 服务端入站Handler，处理RpcRequest
@@ -43,6 +40,11 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             RpcRequest rpcRequest = (RpcRequest) msg;
             log.info("server receive msg: {}", rpcRequest);
 
+            if (rpcRequest.getRpcMessageTypeEnum() == RpcMessageTypeEnum.HEART_BEAT) {
+                log.info("receive heat beat msg from client");
+                return;
+            }
+
             // 调用RpcRequestHandler处理请求，反射调用方法并返回结果
             Object result = rpcRequestHandler.handle(rpcRequest);
             log.info("server get result: {}", result.toString());
@@ -57,6 +59,19 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         } finally {
             // 释放资源
             ReferenceCountUtil.release(msg);
+        }
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleState state = ((IdleStateEvent) evt).state();
+            if (state == IdleState.READER_IDLE) {
+                log.info("idle check happen, so close the connection");
+                ctx.close();
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
         }
     }
 

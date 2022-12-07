@@ -4,6 +4,7 @@ import com.wzq.rpc.proxy.RpcClientProxy;
 import com.wzq.rpc.remoting.transport.netty.client.NettyClientTransport;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Netty客户端测试
@@ -27,6 +28,12 @@ public class NettyRpcClientMain {
         // 进行服务调用
         String hello = helloService.hello(new Hello("我想调用", "好啊，去远程调用吧！"));
         System.out.println(hello);
+
+        try {
+            TimeUnit.SECONDS.sleep(16);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         for (int i = 0; i < 50; i++) {
             List<Student> students = studentService.makeNStudent(i);

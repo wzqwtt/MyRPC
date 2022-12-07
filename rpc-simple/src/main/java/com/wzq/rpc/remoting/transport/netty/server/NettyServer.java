@@ -21,9 +21,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Netty RPC服务端。接收客户端消息，并且根据客户端的消息调用相应的方法，然后返回结果给客户端。
@@ -98,6 +100,8 @@ public class NettyServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            // 30秒内没有收到客户端请求的话就关闭连接
+                            ch.pipeline().addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS));
                             // TODO(sticky) 粘包半包问题
                             /* 自定义的序列化编解码器 */
                             // 解码器(入站): ByteBuf -> RpcRequest
@@ -112,9 +116,9 @@ public class NettyServer {
                     // TCP_NODELAY参数的作用就是控制是否启用Nagle算法
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     // 表示系统用于临时存放已完成三次握手的请求队列的最大长度，如果连接建立频繁，服务器吃创建新连接较慢，可以适当调大这个参数
-                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .option(ChannelOption.SO_BACKLOG, 1024)
                     // 是否开启TCP底层心跳机制
-                    .option(ChannelOption.SO_KEEPALIVE, true);
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             // 绑定端口，同步等待绑定成功
             ChannelFuture channelFuture = b.bind(host, port).sync();
