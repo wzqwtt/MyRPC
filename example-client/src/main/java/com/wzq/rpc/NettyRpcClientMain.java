@@ -29,12 +29,6 @@ public class NettyRpcClientMain {
         String hello = helloService.hello(new Hello("我想调用", "好啊，去远程调用吧！"));
         System.out.println(hello);
 
-        try {
-            TimeUnit.SECONDS.sleep(16);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         for (int i = 0; i < 50; i++) {
             List<Student> students = studentService.makeNStudent(i);
             System.out.println(students);

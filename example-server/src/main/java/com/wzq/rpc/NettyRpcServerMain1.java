@@ -8,7 +8,7 @@ import com.wzq.rpc.remoting.transport.netty.server.NettyServer;
  * @author wzq
  * @create 2022-12-03 21:54
  */
-public class NettyRpcServerMainCopy {
+public class NettyRpcServerMain1 {
 
     public static void main(String[] args) {
         // 手动注册服务到注册中心
