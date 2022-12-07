@@ -30,57 +30,34 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     private final RpcRequestHandler rpcRequestHandler;
 
-    /**
-     * 线程池
-     */
-    private final ExecutorService threadPool;
-
-    /**
-     * 自定义的线程池前缀名
-     */
-    private static final String THREAD_NAME_PREFIX = "netty-server-handler-rpc-pool";
-
     public NettyServerHandler() {
         // 通过单例工厂获得RpcRequest类，用于反射调用RpcRequest里的方法
         this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
-        // 获取线程池
-        CustomThreadPoolConfig customThreadPoolConfig = new CustomThreadPoolConfig();
-        customThreadPoolConfig.setCorePoolSize(6);
-        this.threadPool = ThreadPoolFactoryUtils.createCustomThreadPoolIfAbsent(THREAD_NAME_PREFIX, customThreadPoolConfig);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // 使用一个线程专门执行任务
-        threadPool.execute(() -> {
-            log.info("server handle message from client by thread: {}", Thread.currentThread().getName());
-            // 此时的msg经过解码器处理，已经是RpcRequest了
-            if (msg instanceof RpcRequest) {
-                try {
-                    // 转换消息为RpcRequest类型
-                    RpcRequest rpcRequest = (RpcRequest) msg;
-                    log.info("server receive msg: {}", rpcRequest);
+        // 此时的msg经过解码器处理，已经是RpcRequest了
+        try {
+            // 转换消息为RpcRequest类型
+            RpcRequest rpcRequest = (RpcRequest) msg;
+            log.info("server receive msg: {}", rpcRequest);
 
-                    // 调用RpcRequestHandler处理请求，反射调用方法并返回结果
-                    Object result = rpcRequestHandler.handle(rpcRequest);
-                    log.info("server get result: {}", result.toString());
+            // 调用RpcRequestHandler处理请求，反射调用方法并返回结果
+            Object result = rpcRequestHandler.handle(rpcRequest);
+            log.info("server get result: {}", result.toString());
 
-                    if (ctx.channel().isActive() && ctx.channel().isWritable()) {
-                        // 返回方法执行结果给客户端
-                        RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
-                        ctx.writeAndFlush(rpcResponse).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-                    } else {
-                        log.error("not writable now, message dropped");
-                    }
-                } finally {
-                    // 释放资源
-                    ReferenceCountUtil.release(msg);
-                }
+            if (ctx.channel().isActive() && ctx.channel().isWritable()) {
+                // 返回方法执行结果给客户端
+                RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
+                ctx.writeAndFlush(rpcResponse).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
             } else {
-                log.error("不合法的消息被传递");
-                throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, "服务端错误");
+                log.error("not writable now, message dropped");
             }
-        });
+        } finally {
+            // 释放资源
+            ReferenceCountUtil.release(msg);
+        }
     }
 
     @Override
