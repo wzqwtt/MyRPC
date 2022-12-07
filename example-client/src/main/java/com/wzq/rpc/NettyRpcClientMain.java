@@ -18,6 +18,7 @@ public class NettyRpcClientMain {
         NettyClientTransport rpcClient = new NettyClientTransport();
         // 获取RpcClient动态代理类
         RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
+
         // 获取HelloService接口的动态代理
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         // 获取HelloService接口的动态代理

@@ -40,6 +40,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             try {
                 log.info("client receive msg: {}", msg);
                 RpcResponse rpcResponse = (RpcResponse) msg;
+                // 将该消息设置为处理完成
                 unprocessedRequests.complete(rpcResponse);
             } finally {
                 // 释放msg资源

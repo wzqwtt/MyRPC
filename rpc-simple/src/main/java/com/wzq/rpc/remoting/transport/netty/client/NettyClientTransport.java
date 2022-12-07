@@ -48,6 +48,7 @@ public class NettyClientTransport implements ClientTransport {
         CompletableFuture<RpcResponse> resultFuture = new CompletableFuture<>();
 
         try {
+            // 发现服务，找到所请求服务的地址
             InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             // 获取Channel
             Channel channel = ChannelProvider.get(inetSocketAddress);
@@ -59,9 +60,10 @@ public class NettyClientTransport implements ClientTransport {
                 // 发送消息
                 channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
                     if (future.isSuccess()) {
-                        log.info(String.format("client send message: %s", rpcRequest.toString()));
+                        log.info(String.format("client send message: %s", rpcRequest));
                     } else {
                         future.channel().close();
+                        // 如果任务没有执行成功，在resultFuture中放入异常
                         resultFuture.completeExceptionally(future.cause());
                         log.error("Send failed:", future.cause());
                     }

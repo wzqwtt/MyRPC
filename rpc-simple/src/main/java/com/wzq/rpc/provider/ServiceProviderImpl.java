@@ -35,7 +35,7 @@ public class ServiceProviderImpl implements ServiceProvider {
      */
     @Override
     public <T> void addServiceProvider(T service, Class<T> serviceClass) {
-        // 获取service的名称
+        // 获取service的名称，eg: com.wzq.rpc.HelloService
         String serviceName = serviceClass.getCanonicalName();
 
         // 如果传递过来的service所实现的接口已经被注册，那么直接返回

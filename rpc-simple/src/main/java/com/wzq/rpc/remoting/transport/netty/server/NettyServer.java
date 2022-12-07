@@ -76,6 +76,7 @@ public class NettyServer {
      */
     public <T> void publishService(T service, Class<T> serviceClass) {
         // 注册到注册中心
+        // getCanonicalName: com.wzq.rpc.HelloService
         serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         // 搞到Provider里面去
         serviceProvider.addServiceProvider(service, serviceClass);

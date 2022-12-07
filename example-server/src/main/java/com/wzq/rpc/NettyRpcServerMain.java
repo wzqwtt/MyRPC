@@ -17,6 +17,7 @@ public class NettyRpcServerMain {
 
         NettyServer nettyServer = new NettyServer("127.0.0.1", 9999);
 
+        // 暴露服务
         nettyServer.publishService(helloService, HelloService.class);
         nettyServer.publishService(studentService, StudentService.class);
 

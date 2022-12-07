@@ -80,6 +80,7 @@ public class RpcClientProxy implements InvocationHandler {
         // 发送RpcRequest请求，并返回远程调用的结果
         if (clientTransport instanceof NettyClientTransport) {
             CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>) clientTransport.sendRpcRequest(rpcRequest);
+            // 在这里阻塞了，等待服务端返回结果，然后交给NettyClientHandler处理，设置该completableFuture的result
             result = completableFuture.get().getData();
         }
 

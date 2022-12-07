@@ -13,7 +13,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 用于获取Channel对象
+ * 用于获取Channel对象，带有重试机制
  *
  * @author wzq
  * @create 2022-12-04 21:57
