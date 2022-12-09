@@ -15,20 +15,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @create 2022-12-04 21:57
  */
 @Slf4j
-public final class ChannelProvider {
+public class ChannelProvider {
 
     /**
      * eg: key:127.0.0.1:9999, value:channel
      */
-    private static Map<String, Channel> channels = new ConcurrentHashMap<>();
+    private final Map<String, Channel> channelMap;
 
-    private static NettyClient nettyClient;
+    private final NettyClient nettyClient;
 
-    static {
+    public ChannelProvider() {
+        channelMap = new ConcurrentHashMap<>();
         nettyClient = SingletonFactory.getInstance(NettyClient.class);
-    }
-
-    private ChannelProvider() {
     }
 
     /**
@@ -37,29 +35,29 @@ public final class ChannelProvider {
      * @param inetSocketAddress
      * @return
      */
-    public static Channel get(InetSocketAddress inetSocketAddress) {
+    public Channel get(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
 
         // 判断与该服务端的连接是否存在，如果存在就可以直接连接
-        if (channels.containsKey(key)) {
-            Channel channel = channels.get(key);
+        if (channelMap.containsKey(key)) {
+            Channel channel = channelMap.get(key);
             if (channel != null && channel.isActive()) {
                 return channel;
             } else {
-                channels.remove(key);
+                channelMap.remove(key);
             }
         }
 
         // 否则，重新连接，获取Channel
         Channel channel = nettyClient.doConnect(inetSocketAddress);
-        channels.put(key, channel);
+        channelMap.put(key, channel);
         return channel;
     }
 
-    public static void remove(InetSocketAddress inetSocketAddress) {
+    public void remove(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
-        channels.remove(key);
-        log.info("Channel map size :[{}]", channels.size());
+        channelMap.remove(key);
+        log.info("Channel map size :[{}]", channelMap.size());
     }
 
 }

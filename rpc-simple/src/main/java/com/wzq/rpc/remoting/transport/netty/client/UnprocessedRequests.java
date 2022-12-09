@@ -17,7 +17,7 @@ public class UnprocessedRequests {
     /**
      * 记录消息和CompletableFuture的集合
      */
-    private static Map<String, CompletableFuture<RpcResponse>> unprocessedResponseFutures = new ConcurrentHashMap<>();
+    private static final Map<String, CompletableFuture<RpcResponse<Object>>> UNPROCESSED_RESPONSE_FUTURES = new ConcurrentHashMap<>();
 
     /**
      * 放入未处理的消息
@@ -25,8 +25,8 @@ public class UnprocessedRequests {
      * @param requestId 键
      * @param future    值
      */
-    public void put(String requestId, CompletableFuture<RpcResponse> future) {
-        unprocessedResponseFutures.put(requestId, future);
+    public void put(String requestId, CompletableFuture<RpcResponse<Object>> future) {
+        UNPROCESSED_RESPONSE_FUTURES.put(requestId, future);
     }
 
     /**
@@ -35,7 +35,7 @@ public class UnprocessedRequests {
      * @param requestId 键
      */
     public void remove(String requestId) {
-        unprocessedResponseFutures.remove(requestId);
+        UNPROCESSED_RESPONSE_FUTURES.remove(requestId);
     }
 
     /**
@@ -43,8 +43,8 @@ public class UnprocessedRequests {
      *
      * @param rpcResponse 服务端响应的消息
      */
-    public void complete(RpcResponse rpcResponse) {
-        CompletableFuture<RpcResponse> future = unprocessedResponseFutures.remove(rpcResponse.getRequestId());
+    public void complete(RpcResponse<Object> rpcResponse) {
+        CompletableFuture<RpcResponse<Object>> future = UNPROCESSED_RESPONSE_FUTURES.remove(rpcResponse.getRequestId());
 
         if (future != null) {
             // 将该future设置结果

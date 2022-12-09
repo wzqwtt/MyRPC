@@ -1,27 +1,32 @@
 package com.wzq.rpc;
 
+import com.wzq.rpc.provider.ServiceProvider;
+import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.remoting.transport.netty.server.NettyServer;
+import com.wzq.rpc.service.HelloServiceImpl;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
- * Netty服务端测试
+ * 使用API主动暴露服务
  *
  * @author wzq
- * @create 2022-12-03 21:54
+ * @create 2022-12-09 19:08
  */
 public class NettyRpcServerMain2 {
 
     public static void main(String[] args) {
-        // 手动注册服务到注册中心
-        HelloServiceImpl helloService = new HelloServiceImpl();
-        StudentServiceImpl studentService = new StudentServiceImpl();
+        HelloService helloService = new HelloServiceImpl();
 
-        NettyServer nettyServer = new NettyServer("127.0.0.1", 9997);
+        // 获取Bean
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(NettyRpcServerMain.class);
+        NettyServer nettyServer = applicationContext.getBean(NettyServer.class);
 
-        // 暴露服务
-        nettyServer.publishService(helloService, HelloService.class);
-        nettyServer.publishService(studentService, StudentService.class);
-
+        // 开启NettyServer端
         nettyServer.start();
+
+        // 主动暴露服务
+        ServiceProvider serviceProvider = new ServiceProviderImpl();
+        serviceProvider.publishService(helloService);
     }
 
 }

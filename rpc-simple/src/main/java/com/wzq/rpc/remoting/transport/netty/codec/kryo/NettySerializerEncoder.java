@@ -20,12 +20,12 @@ public class NettySerializerEncoder extends MessageToByteEncoder {
     /**
      * 序列化器
      */
-    private Serializer serializer;
+    private final Serializer serializer;
 
     /**
      * 通用类
      */
-    private Class<?> genericClass;
+    private final Class<?> genericClass;
 
     /**
      * 将对象转换为字节码然后写入到ByteBuf中

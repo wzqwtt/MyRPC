@@ -24,12 +24,12 @@ public class SocketRpcRequestHandlerRunnable implements Runnable {
     /**
      * 客户端来的Socket
      */
-    private Socket socket;
+    private final Socket socket;
 
     /**
      * 真正处理RpcRequest的类
      */
-    private RpcRequestHandler rpcRequestHandler;
+    private final RpcRequestHandler rpcRequestHandler;
 
     public SocketRpcRequestHandlerRunnable(Socket socket) {
         this.socket = socket;

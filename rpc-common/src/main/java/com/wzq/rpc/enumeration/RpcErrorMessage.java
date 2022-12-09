@@ -11,7 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString
-public enum RpcErrorMessageEnum {
+public enum RpcErrorMessage {
 
     // 客户端连接服务端失败
     CLIENT_CONNECT_SERVER_FAILURE("客户端连接服务端失败"),

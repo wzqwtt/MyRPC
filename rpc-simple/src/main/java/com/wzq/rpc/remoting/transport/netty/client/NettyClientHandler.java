@@ -1,10 +1,10 @@
 package com.wzq.rpc.remoting.transport.netty.client;
 
-import com.wzq.rpc.enumeration.RpcMessageTypeEnum;
+import com.wzq.rpc.enumeration.RpcMessageType;
 import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
-import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
+import com.wzq.rpc.enumeration.RpcErrorMessage;
 import com.wzq.rpc.exception.RpcException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -28,8 +28,11 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private final UnprocessedRequests unprocessedRequests;
 
+    private final ChannelProvider channelProvider;
+
     public NettyClientHandler() {
         this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+        this.channelProvider = SingletonFactory.getInstance(ChannelProvider.class);
     }
 
     /**
@@ -43,19 +46,19 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 此处的Client入站处理器，处理的是RpcResponse
         // 在上一步的解码器中，已经解码为RpcResponse类型，再判断一下
-        if (msg instanceof RpcResponse) {
-            try {
-                log.info("client receive msg: {}", msg);
-                RpcResponse rpcResponse = (RpcResponse) msg;
+        try {
+            log.info("client receive msg: [{}]", msg);
+            if (msg instanceof RpcResponse) {
+                RpcResponse<Object> rpcResponse = (RpcResponse<Object>) msg;
                 // 将该消息设置为处理完成
                 unprocessedRequests.complete(rpcResponse);
-            } finally {
-                // 释放msg资源
-                ReferenceCountUtil.release(msg);
+            } else {
+                log.error("不合法的消息被传递");
+                throw new RpcException(RpcErrorMessage.SERVICE_INVOCATION_FAILURE, "不合法的消息被传递");
             }
-        } else {
-            log.error("不合法的消息被传递");
-            throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, "不合法的消息被传递");
+        } finally {
+            // 释放msg资源
+            ReferenceCountUtil.release(msg);
         }
     }
 
@@ -68,9 +71,9 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             IdleState state = ((IdleStateEvent) evt).state();
             if (state == IdleState.WRITER_IDLE) {
                 log.info("write idle happen [{}]", ctx.channel().remoteAddress());
-                Channel channel = ChannelProvider.get((InetSocketAddress) ctx.channel().remoteAddress());
+                Channel channel = channelProvider.get((InetSocketAddress) ctx.channel().remoteAddress());
 
-                RpcRequest rpcRequest = RpcRequest.builder().rpcMessageTypeEnum(RpcMessageTypeEnum.HEART_BEAT).build();
+                RpcRequest rpcRequest = RpcRequest.builder().rpcMessageType(RpcMessageType.HEART_BEAT).build();
                 channel.writeAndFlush(rpcRequest).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
             }
         } else {

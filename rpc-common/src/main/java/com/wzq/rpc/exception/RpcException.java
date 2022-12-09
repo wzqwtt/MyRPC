@@ -1,6 +1,6 @@
 package com.wzq.rpc.exception;
 
-import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
+import com.wzq.rpc.enumeration.RpcErrorMessage;
 
 /**
  * 异常类
@@ -10,16 +10,16 @@ import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
  */
 public class RpcException extends RuntimeException {
 
-    public RpcException(RpcErrorMessageEnum rpcErrorMessageEnum, String detail) {
-        super(rpcErrorMessageEnum.getMessage() + ":" + detail);
+    public RpcException(RpcErrorMessage rpcErrorMessage, String detail) {
+        super(rpcErrorMessage.getMessage() + ":" + detail);
     }
 
     public RpcException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public RpcException(RpcErrorMessageEnum rpcErrorMessageEnum) {
-        super(rpcErrorMessageEnum.getMessage());
+    public RpcException(RpcErrorMessage rpcErrorMessage) {
+        super(rpcErrorMessage.getMessage());
     }
 
 }

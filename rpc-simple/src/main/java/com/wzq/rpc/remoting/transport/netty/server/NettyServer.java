@@ -1,13 +1,8 @@
 package com.wzq.rpc.remoting.transport.netty.server;
 
-import com.wzq.rpc.annotation.RpcService;
 import com.wzq.rpc.config.CustomShutdownHook;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
-import com.wzq.rpc.provider.ServiceProvider;
-import com.wzq.rpc.provider.ServiceProviderImpl;
-import com.wzq.rpc.registry.ServiceRegistry;
-import com.wzq.rpc.registry.ZkServiceRegistry;
 import com.wzq.rpc.serialize.Serializer;
 import com.wzq.rpc.serialize.kryo.KryoSerializer;
 import com.wzq.rpc.remoting.transport.netty.codec.kryo.NettySerializerDecoder;
@@ -23,17 +18,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-import java.net.InetSocketAddress;
-import java.util.Map;
+import java.net.InetAddress;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,50 +34,22 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-@PropertySource("classpath:rpc.properties")
-public class NettyServer implements InitializingBean, ApplicationContextAware {
+public class NettyServer implements InitializingBean {
 
     /**
-     * 主机和端口号
+     * 端口
      */
-    @Value("${rpc.server.host}")
-    private String host;
-
-    @Value("${rpc.server.port}")
-    private int port;
-
-    /**
-     * 注册中心
-     */
-    private final ServiceRegistry serviceRegistry = new ZkServiceRegistry();
-
-    /**
-     * 服务的Provider
-     */
-    private final ServiceProvider serviceProvider = new ServiceProviderImpl();
+    public static final int PORT = 9998;
 
     /**
      * 序列化器
      */
     private final Serializer serializer = new KryoSerializer();
 
-    /**
-     * 暴露服务
-     *
-     * @param service      服务
-     * @param serviceClass 服务的类型
-     * @param <T>          服务的类型
-     */
-    public void publishService(Object service, Class<?> serviceClass) {
-        // 注册到注册中心
-        // getCanonicalName: com.wzq.rpc.HelloService
-        serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        // 搞到Provider里面去
-        serviceProvider.addServiceProvider(service, serviceClass);
-//        start();
-    }
-
+    @SneakyThrows
     public void start() {
+        String host = InetAddress.getLocalHost().getHostAddress();
+
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -120,7 +82,7 @@ public class NettyServer implements InitializingBean, ApplicationContextAware {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             // 绑定端口，同步等待绑定成功
-            ChannelFuture channelFuture = b.bind(host, port).sync();
+            ChannelFuture channelFuture = b.bind(host, PORT).sync();
 
             // 等待服务端监听端口关闭
             channelFuture.channel().closeFuture().sync();
@@ -144,20 +106,4 @@ public class NettyServer implements InitializingBean, ApplicationContextAware {
         CustomShutdownHook.getCustomShutdownHook().clearAll();
     }
 
-    /**
-     * 获取所有被RpcService注解的类，将这些类推送到zookeeper注册中心
-     *
-     * @param applicationContext
-     * @throws BeansException
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // 获取所有标注@RpcService注解的类
-        Map<String, Object> registeredBeanMap = applicationContext.getBeansWithAnnotation(RpcService.class);
-        // 循环遍历所有元素，进行注册
-        for (Map.Entry<String, Object> entry : registeredBeanMap.entrySet()) {
-            Object obj = entry.getValue();
-            publishService(obj, obj.getClass().getInterfaces()[0]);
-        }
-    }
 }

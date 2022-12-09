@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @author wzq
  * @create 2022-12-03 21:54
  */
-@ComponentScan("com.wzq")
+@ComponentScan("com.wzq.rpc")
 public class NettyRpcServerMain {
 
     public static void main(String[] args) {

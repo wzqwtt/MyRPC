@@ -1,5 +1,7 @@
 package com.wzq.rpc.registry;
 
+import com.wzq.rpc.registry.zk.ZkServiceDiscovery;
+import com.wzq.rpc.registry.zk.ZkServiceRegistry;
 import org.junit.Test;
 
 import java.net.InetSocketAddress;

@@ -1,9 +1,12 @@
-package com.wzq.rpc.utils.zk;
+package com.wzq.rpc.registry.zk.util;
 
+import com.wzq.rpc.enumeration.RpcProperties;
 import com.wzq.rpc.exception.RpcException;
+import com.wzq.rpc.utils.file.PropertiesFileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
@@ -12,6 +15,7 @@ import org.apache.zookeeper.CreateMode;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +41,7 @@ public class CuratorUtils {
     /**
      * zookeeper服务端地址
      */
-    private static final String CONNECT_STRING = "127.0.0.1:2181";
+    private static String defaultZookeeperAddress = "127.0.0.1:2181";
 
     /**
      * MyRPC在zookeeper的根节点
@@ -47,17 +51,17 @@ public class CuratorUtils {
     /**
      * 服务地址
      */
-    private static final Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
+    private static final Map<String, List<String>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap<>();
 
     /**
      * 已注册服务的所有路径
      */
-    private static final Set<String> registeredPathSet = ConcurrentHashMap.newKeySet();
+    private static final Set<String> REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
 
     /**
      * Zookeeper连接
      */
-    private static final CuratorFramework zkClient = getZKClient();
+    private static CuratorFramework zkClient;
 
     /**
      * 防止其他人创建该类，构造方法私有化
@@ -70,30 +74,44 @@ public class CuratorUtils {
      *
      * @return
      */
-    private static CuratorFramework getZKClient() {
+    public static CuratorFramework getZKClient() {
+        // 检查用户是否配置了zookeeper地址
+        Properties properties = PropertiesFileUtils.readPropertiesFile(RpcProperties.RPC_CONFIG_PATH.getPropertyValue());
+
+        // 如果properties不为空，就获取配置文件中zookeeper的值
+        if (properties != null) {
+            defaultZookeeperAddress = properties.getProperty(RpcProperties.ZK_ADDRESS.getPropertyValue());
+        }
+
+        // 如果zkClient已经启动，那么直接返回
+        if (zkClient != null && zkClient.getState() == CuratorFrameworkState.STARTED) {
+            return zkClient;
+        }
+
         // 重试连接机制
         ExponentialBackoffRetry retryPolicy = new ExponentialBackoffRetry(BASE_SLEEP_TIME, MAX_RETRIES);
 
-        CuratorFramework curatorFramework = CuratorFrameworkFactory
+        zkClient = CuratorFrameworkFactory
                 .builder()
                 // 用于设置地址及端口号
-                .connectString(CONNECT_STRING)
+                .connectString(defaultZookeeperAddress)
                 // 用于设置重连策略
                 .retryPolicy(retryPolicy)
                 .build();
-        curatorFramework.start();
-        return curatorFramework;
+        zkClient.start();
+        return zkClient;
     }
 
     /**
      * 创建永久节点，节点驻存在zookeeper中
      *
-     * @param path 节点路径
+     * @param zkClient zookeeper连接
+     * @param path     节点路径
      */
-    public static void createPersistentNode(String path) {
+    public static void createPersistentNode(CuratorFramework zkClient, String path) {
         try {
             // 当registeredPathSet中存在路径或者zookeeper已经存在路径，则打印节点已存在
-            if (registeredPathSet.contains(path) || zkClient.checkExists().forPath(path) != null) {
+            if (REGISTERED_PATH_SET.contains(path) || zkClient.checkExists().forPath(path) != null) {
                 log.info("节点[{}]已存在", path);
             } else {
                 // eg: /my-rpc/com.wzq.rpc.HelloService/127.0.0.1:9999
@@ -107,7 +125,7 @@ public class CuratorUtils {
                         .forPath(path);
                 log.info("节点创建成功，节点为[{}]", path);
             }
-            registeredPathSet.add(path);
+            REGISTERED_PATH_SET.add(path);
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());
         }
@@ -116,12 +134,13 @@ public class CuratorUtils {
     /**
      * 获取某个service下的子节点，也就是获取所有提供服务的生产者的地址
      *
+     * @param zkClient    zookeeper连接
      * @param serviceName 服务名称
      * @return 返回子节点
      */
-    public static List<String> getChildrenNodes(String serviceName) {
-        if (serviceAddressMap.containsKey(serviceName)) {
-            return serviceAddressMap.get(serviceName);
+    public static List<String> getChildrenNodes(CuratorFramework zkClient, String serviceName) {
+        if (SERVICE_ADDRESS_MAP.containsKey(serviceName)) {
+            return SERVICE_ADDRESS_MAP.get(serviceName);
         }
 
         List<String> result;
@@ -129,9 +148,9 @@ public class CuratorUtils {
 
         try {
             result = zkClient.getChildren().forPath(servicePath);
-            serviceAddressMap.put(serviceName, result);
+            SERVICE_ADDRESS_MAP.put(serviceName, result);
             // 注册监听
-            registerWatcher(serviceName);
+            registerWatcher(serviceName, zkClient);
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());
         }
@@ -145,16 +164,16 @@ public class CuratorUtils {
      * @param zkClient    zkClient
      * @param serviceName 服务名称
      */
-    private static void registerWatcher(String serviceName) {
+    private static void registerWatcher(String serviceName, CuratorFramework zkClient) {
         String servicePath = CuratorUtils.ZK_REGISTER_PORT_PATH + "/" + serviceName;
 
-        PathChildrenCache pathChildrenCache = new PathChildrenCache(CuratorUtils.zkClient, servicePath, true);
+        PathChildrenCache pathChildrenCache = new PathChildrenCache(zkClient, servicePath, true);
         pathChildrenCache.getListenable()
                 .addListener(new PathChildrenCacheListener() {
                     @Override
                     public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
                         List<String> serviceAddresses = client.getChildren().forPath(servicePath);
-                        serviceAddressMap.put(serviceName, serviceAddresses);
+                        SERVICE_ADDRESS_MAP.put(serviceName, serviceAddresses);
                     }
                 });
 
@@ -168,16 +187,18 @@ public class CuratorUtils {
 
     /**
      * 清空注册中心的数据
+     *
+     * @param zkClient zookeeper连接
      */
-    public static void clearRegistry() {
-        registeredPathSet.stream().parallel().forEach(p -> {
+    public static void clearRegistry(CuratorFramework zkClient) {
+        REGISTERED_PATH_SET.stream().parallel().forEach(p -> {
             try {
                 zkClient.delete().forPath(p);
             } catch (Exception e) {
                 throw new RpcException(e.getMessage(), e.getCause());
             }
         });
-        log.info("服务端（Provider）所有注册的服务都被清空:[{}]", registeredPathSet.toString());
+        log.info("服务端（Provider）所有注册的服务都被清空:[{}]", REGISTERED_PATH_SET.toString());
     }
 
 }

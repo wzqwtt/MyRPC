@@ -1,6 +1,6 @@
 package com.wzq.rpc.remoting.dto;
 
-import com.wzq.rpc.enumeration.RpcMessageTypeEnum;
+import com.wzq.rpc.enumeration.RpcMessageType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -49,6 +49,6 @@ public class RpcRequest implements Serializable {
     /**
      * Rpc消息类型
      */
-    private RpcMessageTypeEnum rpcMessageTypeEnum;
+    private RpcMessageType rpcMessageType;
 
 }

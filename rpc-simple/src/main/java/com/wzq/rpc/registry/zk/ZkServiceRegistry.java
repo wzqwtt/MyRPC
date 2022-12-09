@@ -1,6 +1,7 @@
-package com.wzq.rpc.registry;
+package com.wzq.rpc.registry.zk;
 
-import com.wzq.rpc.utils.zk.CuratorUtils;
+import com.wzq.rpc.registry.ServiceRegistry;
+import com.wzq.rpc.registry.zk.util.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -22,8 +23,9 @@ public class ZkServiceRegistry implements ServiceRegistry {
         // 节点路径: /my-rpc/com.wzq.rpc.HelloService/127.0.0.1:9999
         // inetSocketAddress的toString方法直接是：/127.0.0.1:9999
         servicePath.append(inetSocketAddress.toString());
+
         // 注册为永久节点，Server关闭即释放实现类信息
-        CuratorUtils.createPersistentNode(servicePath.toString());
+        CuratorUtils.createPersistentNode(CuratorUtils.getZKClient(), servicePath.toString());
     }
 
 }

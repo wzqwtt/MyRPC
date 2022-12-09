@@ -22,12 +22,12 @@ public class NettySerializerDecoder extends ByteToMessageDecoder {
     /**
      * 序列化器
      */
-    private Serializer serializer;
+    private final Serializer serializer;
 
     /**
      * 通用类
      */
-    private Class<?> genericClass;
+    private final Class<?> genericClass;
 
     /**
      * Netty传输的消息长度也就是对象序列化后对应的字节数组大小，存储在ByteBuf头部

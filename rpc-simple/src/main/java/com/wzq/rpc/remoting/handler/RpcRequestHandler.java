@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.handler;
 
+import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.enumeration.RpcResponseCode;
@@ -19,10 +20,12 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class RpcRequestHandler {
-    /**
-     * 注册中心
-     */
-    private static final ServiceProvider serviceProvider = new ServiceProviderImpl();
+
+    private final ServiceProvider serviceProvider;
+
+    public RpcRequestHandler() {
+        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+    }
 
     /**
      * 处理RpcRequest中的请求

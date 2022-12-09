@@ -30,11 +30,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class NettyClient {
 
-    private static final Bootstrap bootstrap;
-    private static final EventLoopGroup eventLoopGroup;
+    private final Bootstrap bootstrap;
+    private final EventLoopGroup eventLoopGroup;
 
-    // 初始化相关资源，比如:EventLoopGroup、BootStrap
-    static {
+    /**
+     * 初始化相关资源，比如:EventLoopGroup、BootStrap
+     */
+    public NettyClient() {
         // 线程组
         eventLoopGroup = new NioEventLoopGroup();
 
@@ -85,7 +87,7 @@ public final class NettyClient {
     /**
      * 优雅的关闭eventLoopGroup线程组
      */
-    public static void close() {
+    public void close() {
         log.info("call close method");
         eventLoopGroup.shutdownGracefully();
     }

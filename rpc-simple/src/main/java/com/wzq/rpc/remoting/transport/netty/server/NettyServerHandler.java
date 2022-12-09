@@ -1,6 +1,6 @@
 package com.wzq.rpc.remoting.transport.netty.server;
 
-import com.wzq.rpc.enumeration.RpcMessageTypeEnum;
+import com.wzq.rpc.enumeration.RpcMessageType;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.remoting.handler.RpcRequestHandler;
@@ -40,7 +40,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             RpcRequest rpcRequest = (RpcRequest) msg;
             log.info("server receive msg: {}", rpcRequest);
 
-            if (rpcRequest.getRpcMessageTypeEnum() == RpcMessageTypeEnum.HEART_BEAT) {
+            if (rpcRequest.getRpcMessageType() == RpcMessageType.HEART_BEAT) {
                 log.info("receive heat beat msg from client");
                 return;
             }

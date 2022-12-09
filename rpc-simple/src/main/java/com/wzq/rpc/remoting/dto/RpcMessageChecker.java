@@ -1,6 +1,6 @@
 package com.wzq.rpc.remoting.dto;
 
-import com.wzq.rpc.enumeration.RpcErrorMessageEnum;
+import com.wzq.rpc.enumeration.RpcErrorMessage;
 import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,19 +30,19 @@ public class RpcMessageChecker {
         // 如果rpcResponse为空，则调用服务失败
         if (rpcResponse == null) {
             log.error("调用服务失败,rpcResponse为null,serviceName:{}", rpcRequest.getInterfaceName());
-            throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
+            throw new RpcException(RpcErrorMessage.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
 
         // 判断请求的id和响应的id是否一致。如果不一致就抛出异常
         if (!rpcRequest.getRequestId().equals(rpcResponse.getRequestId())) {
             log.error("请求的id和响应的id不一致");
-            throw new RpcException(RpcErrorMessageEnum.REQUEST_NOT_MATCH_RESPONSE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
+            throw new RpcException(RpcErrorMessage.REQUEST_NOT_MATCH_RESPONSE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
 
         // 如果响应码为空，或 响应码不为SUCCESS，则调用失败
         if (rpcResponse.getCode() == null || !rpcResponse.getCode().equals(RpcResponseCode.SUCCESS.getCode())) {
             log.error("调用服务失败,serviceName:{},RpcResponse:{}", rpcRequest.getInterfaceName(), rpcResponse);
-            throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
+            throw new RpcException(RpcErrorMessage.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
     }
 
