@@ -1,4 +1,9 @@
-package com.wzq.rpc;
+package com.wzq.rpc.service;
+
+import com.wzq.rpc.Student;
+import com.wzq.rpc.StudentService;
+import com.wzq.rpc.annotation.RpcService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
@@ -6,7 +11,13 @@ import java.util.*;
  * @author wzq
  * @create 2022-12-05 21:06
  */
+@Slf4j
+@RpcService
 public class StudentServiceImpl implements StudentService {
+
+    static {
+        System.out.println("StudentServiceImpl被注册了");
+    }
 
     private static final String[] names = new String[]{
             "张三", "李四", "王五", "钱六", "wzq", "wtt", "wzqwtt"

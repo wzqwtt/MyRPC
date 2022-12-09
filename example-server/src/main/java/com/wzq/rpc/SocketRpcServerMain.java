@@ -1,6 +1,8 @@
 package com.wzq.rpc;
 
 import com.wzq.rpc.remoting.transport.socket.SocketRpcServer;
+import com.wzq.rpc.service.HelloServiceImpl;
+import com.wzq.rpc.service.StudentServiceImpl;
 
 /**
  * @author wzq

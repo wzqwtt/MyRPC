@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.transport.netty.server;
 
+import com.wzq.rpc.annotation.RpcService;
 import com.wzq.rpc.config.CustomShutdownHook;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
@@ -23,8 +24,16 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,40 +43,33 @@ import java.util.concurrent.TimeUnit;
  * @create 2022-12-02 20:22
  */
 @Slf4j
-public class NettyServer {
+@Component
+@PropertySource("classpath:rpc.properties")
+public class NettyServer implements InitializingBean, ApplicationContextAware {
 
     /**
      * 主机和端口号
      */
+    @Value("${rpc.server.host}")
     private String host;
+
+    @Value("${rpc.server.port}")
     private int port;
 
     /**
      * 注册中心
      */
-    private ServiceRegistry serviceRegistry;
+    private final ServiceRegistry serviceRegistry = new ZkServiceRegistry();
 
     /**
      * 服务的Provider
      */
-    private ServiceProvider serviceProvider;
+    private final ServiceProvider serviceProvider = new ServiceProviderImpl();
 
     /**
      * 序列化器
      */
-    private Serializer serializer;
-
-    public NettyServer(String host, int port) {
-        this.host = host;
-        this.port = port;
-        // TODO(serializer) 添加更多的序列化器，由配置文件决定使用哪种序列化方式
-        this.serializer = new KryoSerializer();
-
-        // 注册中心
-        serviceRegistry = new ZkServiceRegistry();
-        // Provider
-        serviceProvider = new ServiceProviderImpl();
-    }
+    private final Serializer serializer = new KryoSerializer();
 
     /**
      * 暴露服务
@@ -76,7 +78,7 @@ public class NettyServer {
      * @param serviceClass 服务的类型
      * @param <T>          服务的类型
      */
-    public <T> void publishService(T service, Class<T> serviceClass) {
+    public void publishService(Object service, Class<?> serviceClass) {
         // 注册到注册中心
         // getCanonicalName: com.wzq.rpc.HelloService
         serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
@@ -86,9 +88,6 @@ public class NettyServer {
     }
 
     public void start() {
-        // 善后工作
-        CustomShutdownHook.getCustomShutdownHook().clearAll();
-
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -131,6 +130,34 @@ public class NettyServer {
             log.error("shutdown bossGroup and workGroup");
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+        }
+    }
+
+    /**
+     * 在初始化NettyServer类中，设置关闭钩子
+     *
+     * @throws Exception
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // 设置关闭钩子，待JVM退出时执行一个线程，关闭所有资源
+        CustomShutdownHook.getCustomShutdownHook().clearAll();
+    }
+
+    /**
+     * 获取所有被RpcService注解的类，将这些类推送到zookeeper注册中心
+     *
+     * @param applicationContext
+     * @throws BeansException
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // 获取所有标注@RpcService注解的类
+        Map<String, Object> registeredBeanMap = applicationContext.getBeansWithAnnotation(RpcService.class);
+        // 循环遍历所有元素，进行注册
+        for (Map.Entry<String, Object> entry : registeredBeanMap.entrySet()) {
+            Object obj = entry.getValue();
+            publishService(obj, obj.getClass().getInterfaces()[0]);
         }
     }
 }

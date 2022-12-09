@@ -32,7 +32,7 @@ public class CuratorUtils {
     /**
      * 重试连接次数
      */
-    protected static final int MAX_RETRIES = 5;
+    protected static final int MAX_RETRIES = 3;
 
     /**
      * zookeeper服务端地址
@@ -47,14 +47,17 @@ public class CuratorUtils {
     /**
      * 服务地址
      */
-    private static Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
+    private static final Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
 
     /**
      * 已注册服务的所有路径
      */
-    private static Set<String> registeredPathSet = ConcurrentHashMap.newKeySet();
+    private static final Set<String> registeredPathSet = ConcurrentHashMap.newKeySet();
 
-    private static CuratorFramework zkClient = getZKClient();
+    /**
+     * Zookeeper连接
+     */
+    private static final CuratorFramework zkClient = getZKClient();
 
     /**
      * 防止其他人创建该类，构造方法私有化
@@ -128,7 +131,7 @@ public class CuratorUtils {
             result = zkClient.getChildren().forPath(servicePath);
             serviceAddressMap.put(serviceName, result);
             // 注册监听
-            registerWatcher(zkClient, serviceName);
+            registerWatcher(serviceName);
         } catch (Exception e) {
             throw new RpcException(e.getMessage(), e.getCause());
         }
@@ -142,10 +145,10 @@ public class CuratorUtils {
      * @param zkClient    zkClient
      * @param serviceName 服务名称
      */
-    private static void registerWatcher(CuratorFramework zkClient, String serviceName) {
+    private static void registerWatcher(String serviceName) {
         String servicePath = CuratorUtils.ZK_REGISTER_PORT_PATH + "/" + serviceName;
 
-        PathChildrenCache pathChildrenCache = new PathChildrenCache(zkClient, servicePath, true);
+        PathChildrenCache pathChildrenCache = new PathChildrenCache(CuratorUtils.zkClient, servicePath, true);
         pathChildrenCache.getListenable()
                 .addListener(new PathChildrenCacheListener() {
                     @Override
