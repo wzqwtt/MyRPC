@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.*;
 
 /**
+ * RpcService注解，直接在需要调用的接口实现类上添加该注解，可以实现服务的自动注册
  * @author wzq
  * @create 2022-12-09 18:43
  */
