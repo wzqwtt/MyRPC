@@ -1,9 +1,8 @@
 package com.wzq.rpc.remoting.handler;
 
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.remoting.dto.RpcRequest;
-import com.wzq.rpc.remoting.dto.RpcResponse;
-import com.wzq.rpc.enumeration.RpcResponseCode;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
@@ -34,8 +33,15 @@ public class RpcRequestHandler {
      * @return 方法调用的结果
      */
     public Object handle(RpcRequest rpcRequest) {
+        // 构造一个RpcServiceProperties
+        RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder()
+                .serviceName(rpcRequest.getInterfaceName())
+                .version(rpcRequest.getVersion())
+                .group(rpcRequest.getGroup())
+                .build();
+
         // 通过Provider获取目标类（即客户端需要调用的类）
-        Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
+        Object service = serviceProvider.getServiceProvider(rpcServiceProperties);
         return invokeTargetMethod(rpcRequest, service);
     }
 
@@ -52,11 +58,6 @@ public class RpcRequestHandler {
         try {
             // 获取方法
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
-
-            // 如果方法为空，则返回调用失败
-            if (method == null) {
-                return RpcResponse.fail(RpcResponseCode.NOT_FOUND_METHOD);
-            }
 
             // 反射调用方法
             result = method.invoke(service, rpcRequest.getParameters());

@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.transport.netty.client;
 
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
@@ -47,8 +48,16 @@ public class NettyClientTransport implements ClientTransport {
         // 构建返回值
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
 
-        // 发现服务，找到所请求服务的地址
-        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
+        // 获取请求中的rpcServiceName
+        String rpcServiceName = RpcServiceProperties.builder()
+                .serviceName(rpcRequest.getInterfaceName())
+                .group(rpcRequest.getGroup())
+                .version(rpcRequest.getVersion())
+                .build()
+                .toRpcServiceName();
+        log.error("rpcServiceName: {}",rpcServiceName);
+        // 获取service的地址
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcServiceName);
         // 获取Channel
         Channel channel = channelProvider.get(inetSocketAddress);
 

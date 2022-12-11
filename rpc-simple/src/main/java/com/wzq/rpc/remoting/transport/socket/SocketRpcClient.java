@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.transport.socket;
 
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.registry.ServiceDiscovery;
@@ -43,8 +44,16 @@ public class SocketRpcClient implements ClientTransport {
      */
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
-        // 获取rpcRequest方法的接口名，并在注册中心寻找实现类所在主机和端口号
-        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
+        // 获取请求中的rpcServiceName
+        String rpcServiceName = RpcServiceProperties.builder()
+                .serviceName(rpcRequest.getInterfaceName())
+                .group(rpcRequest.getGroup())
+                .version(rpcRequest.getVersion())
+                .build()
+                .toRpcServiceName();
+        // 获取service的地址
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcServiceName);
+
         // 新建一个Socket
         try (Socket socket = new Socket()) {
             // 连接到服务所在的主机

@@ -17,8 +17,8 @@ public class SocketRpcServerMain {
 
         SocketRpcServer socketRpcServer = new SocketRpcServer("127.0.0.1", 7);
 
-        socketRpcServer.publishService(helloService, HelloService.class);
-        socketRpcServer.publishService(studentService, StudentService.class);
+//        socketRpcServer.publishService(helloService, HelloService.class);
+//        socketRpcServer.publishService(studentService, StudentService.class);
 
         socketRpcServer.start();
     }

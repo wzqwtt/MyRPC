@@ -3,7 +3,6 @@ package com.wzq.rpc;
 import com.wzq.rpc.remoting.transport.netty.server.NettyServer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
 
 /**
  * Netty服务端测试

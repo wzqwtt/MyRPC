@@ -10,18 +10,18 @@ import lombok.extern.slf4j.Slf4j;
  * @create 2022-12-01 22:43
  */
 @Slf4j
-@RpcService(group = "test1", version = "version1")
-public class HelloServiceImpl implements HelloService {
+@RpcService(group = "test2", version = "version1")
+public class HelloServiceImpl2 implements HelloService {
 
     static {
-        System.out.println("HelloServiceImpl被注册了");
+        System.out.println("HelloServiceImpl2被注册了");
     }
 
     @Override
     public String hello(Hello hello) {
-        log.info("HelloServiceImpl收到: {}", hello.getMessage());
+        log.info("HelloServiceImpl2收到: {}", hello.getMessage());
         String result = "Hello description is " + hello.getDescription();
-        log.info("HelloServiceImpl返回: {}", result);
+        log.info("HelloServiceImpl2返回: {}", result);
         return result;
     }
 }

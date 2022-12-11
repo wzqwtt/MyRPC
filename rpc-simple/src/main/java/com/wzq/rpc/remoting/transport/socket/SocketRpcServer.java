@@ -1,6 +1,7 @@
 package com.wzq.rpc.remoting.transport.socket;
 
 import com.wzq.rpc.config.CustomShutdownHook;
+import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.registry.ServiceRegistry;
@@ -39,39 +40,14 @@ public class SocketRpcServer {
     private final String host;
     private final int port;
 
-    /**
-     * 注册中心
-     */
-    private final ServiceRegistry serviceRegistry;
-
-    /**
-     * Provider
-     */
-    private final ServiceProvider serviceProvider;
-
     public SocketRpcServer(String host, int port) {
         // 使用抽象出去的线程池工厂类创建线程池
         threadPool = ThreadPoolFactoryUtils.createCustomThreadPoolIfAbsent(THREAD_NAME_PREFIX);
 
         this.host = host;
         this.port = port;
-        serviceRegistry = new ZkServiceRegistry();
-        serviceProvider = new ServiceProviderImpl();
-    }
 
-    /**
-     * 暴露服务
-     *
-     * @param service      服务的实现类
-     * @param serviceClass 类型
-     * @param <T>          服务的类型
-     */
-    public <T> void publishService(T service, Class<T> serviceClass) {
-        // 将服务添加到Provider
-        serviceProvider.addServiceProvider(service, serviceClass);
-        // 注册服务到zookeeper
-        serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-//        start();
+        SingletonFactory.getInstance(ServiceProviderImpl.class);
     }
 
     /**

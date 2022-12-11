@@ -1,5 +1,6 @@
 package com.wzq.rpc.proxy;
 
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.remoting.dto.RpcMessageChecker;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
@@ -29,8 +30,25 @@ public class RpcClientProxy implements InvocationHandler {
      */
     private final ClientTransport clientTransport;
 
+    private final RpcServiceProperties rpcServiceProperties;
+
     public RpcClientProxy(ClientTransport clientTransport) {
         this.clientTransport = clientTransport;
+        this.rpcServiceProperties = RpcServiceProperties.builder().version("").group("").build();
+    }
+
+    public RpcClientProxy(ClientTransport clientTransport, RpcServiceProperties rpcServiceProperties) {
+        this.clientTransport = clientTransport;
+
+        if (rpcServiceProperties.getGroup() == null) {
+            rpcServiceProperties.setGroup("");
+        }
+
+        if (rpcServiceProperties.getVersion() == null) {
+            rpcServiceProperties.setVersion("");
+        }
+
+        this.rpcServiceProperties = rpcServiceProperties;
     }
 
     /**
@@ -74,19 +92,22 @@ public class RpcClientProxy implements InvocationHandler {
                 .paramTypes(method.getParameterTypes())
                 // 设置Request ID
                 .requestId(UUID.randomUUID().toString())
+                .group(rpcServiceProperties.getGroup())
+                .version(rpcServiceProperties.getVersion())
                 .build();
 
-        RpcResponse rpcResponse = null;
+        RpcResponse<Object> rpcResponse = null;
 
         // 发送RpcRequest请求，并返回远程调用的结果
         if (clientTransport instanceof NettyClientTransport) {
-            CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>) clientTransport.sendRpcRequest(rpcRequest);
+            CompletableFuture<RpcResponse<Object>> completableFuture =
+                    (CompletableFuture<RpcResponse<Object>>) clientTransport.sendRpcRequest(rpcRequest);
             // 在这里阻塞了，等待服务端返回结果，然后交给NettyClientHandler处理，设置该completableFuture的result
             rpcResponse = completableFuture.get();
         }
 
         if (clientTransport instanceof SocketRpcClient) {
-            rpcResponse = (RpcResponse) clientTransport.sendRpcRequest(rpcRequest);
+            rpcResponse = (RpcResponse<Object>) clientTransport.sendRpcRequest(rpcRequest);
         }
         // 校验RpcRequest和RpcResponse
         RpcMessageChecker.check(rpcResponse, rpcRequest);

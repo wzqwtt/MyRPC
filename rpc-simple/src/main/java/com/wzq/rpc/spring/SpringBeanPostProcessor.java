@@ -1,6 +1,7 @@
-package com.wzq.rpc.remoting.transport.netty.server;
+package com.wzq.rpc.spring;
 
 import com.wzq.rpc.annotation.RpcService;
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
@@ -29,7 +30,15 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean.getClass().isAnnotationPresent(RpcService.class)) {
             log.info("[{}] is annotated with [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
-            serviceProvider.publishService(bean);
+            // 获取RpcService注解
+            RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
+            // 把RpcService中设置的version和group封装到RpcServiceProperties
+            RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder()
+                    .group(rpcService.group())
+                    .version(rpcService.version())
+                    .build();
+            // 暴露服务
+            serviceProvider.publishService(bean, rpcServiceProperties);
         }
         return bean;
     }

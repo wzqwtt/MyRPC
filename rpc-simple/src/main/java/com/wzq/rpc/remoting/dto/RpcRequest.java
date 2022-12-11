@@ -51,4 +51,14 @@ public class RpcRequest implements Serializable {
      */
     private RpcMessageType rpcMessageType;
 
+    /**
+     * 服务的version
+     */
+    private String version;
+
+    /**
+     * 该服务隶属于哪个组
+     */
+    private String group;
+
 }

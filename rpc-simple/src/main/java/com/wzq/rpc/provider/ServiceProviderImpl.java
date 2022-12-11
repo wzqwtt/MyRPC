@@ -1,5 +1,6 @@
 package com.wzq.rpc.provider;
 
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.enumeration.RpcErrorMessage;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.registry.ServiceRegistry;
@@ -28,44 +29,49 @@ public class ServiceProviderImpl implements ServiceProvider {
      * key: service/interface name
      * value: service
      */
-    private static final Map<String, Object> SERVICE_MAP = new ConcurrentHashMap<>();
-    private static final Set<String> REGISTERED_SERVICE = ConcurrentHashMap.newKeySet();
+    private final Map<String, Object> serviceMap;
+    private final Set<String> registeredService;
 
-    private final ServiceRegistry serviceRegistry = new ZkServiceRegistry();
+    private final ServiceRegistry serviceRegistry;
+
+    public ServiceProviderImpl() {
+        serviceMap = new ConcurrentHashMap<>();
+        registeredService = ConcurrentHashMap.newKeySet();
+        serviceRegistry = new ZkServiceRegistry();
+    }
 
     /**
      * 注册一个service，将这个对象所有实现的接口都注册进去
-     * <p>
-     * TODO(scan) 修改为扫描注解注册
      *
      * @param service 服务
      */
     @Override
-    public void addServiceProvider(Object service, Class<?> serviceClass) {
-        // 获取service的名称，eg: com.wzq.rpc.HelloService
-        String serviceName = serviceClass.getCanonicalName();
+    public void addServiceProvider(Object service, Class<?> serviceClass, RpcServiceProperties rpcServiceProperties) {
+        // service name从属性中获取
+        String rpcServiceName = rpcServiceProperties.toRpcServiceName();
 
-        // 如果传递过来的service所实现的接口已经被注册，那么直接返回
-        if (REGISTERED_SERVICE.contains(serviceName)) {
+        // 如果该service name已经被注册，那么直接返回
+        if (registeredService.contains(rpcServiceName)) {
             return;
         }
 
-        REGISTERED_SERVICE.add(serviceName);
+        registeredService.add(rpcServiceName);
 
-        SERVICE_MAP.put(serviceName, service);
+        serviceMap.put(rpcServiceName, service);
 
-        log.info("Add service: {} and interfaces {}", serviceName, service.getClass().getInterfaces());
+        log.info("Add service: {} and interfaces {}", rpcServiceName, service.getClass().getInterfaces());
     }
 
     /**
      * 获取指定接口名称的类
      *
-     * @param serviceName 服务名称
+     * @param rpcServiceProperties 服务相关联的属性
      * @return 服务
      */
     @Override
-    public Object getServiceProvider(String serviceName) {
-        Object service = SERVICE_MAP.get(serviceName);
+    public Object getServiceProvider(RpcServiceProperties rpcServiceProperties) {
+        String serviceName = rpcServiceProperties.toRpcServiceName();
+        Object service = serviceMap.get(serviceName);
         if (service == null) {
             throw new RpcException(RpcErrorMessage.SERVICE_CAN_NOT_FOUND);
         }
@@ -75,17 +81,37 @@ public class ServiceProviderImpl implements ServiceProvider {
     /**
      * 发布服务
      *
+     * @param service              服务实例对象
+     * @param rpcServiceProperties 服务相关的属性
+     */
+    @Override
+    public void publishService(Object service, RpcServiceProperties rpcServiceProperties) {
+        try {
+            // 获取主机IP
+            String host = InetAddress.getLocalHost().getHostAddress();
+            // 获取该服务实现类实现的第一个接口
+            Class<?> serviceRelatedInterface = service.getClass().getInterfaces()[0];
+
+            // 获取该接口的全类名，然后设置到ServiceName中
+            String serviceName = serviceRelatedInterface.getCanonicalName();
+            rpcServiceProperties.setServiceName(serviceName);
+
+            // 直接添加到Provider
+            this.addServiceProvider(service, serviceRelatedInterface, rpcServiceProperties);
+            // 将该服务直接注册到注册中心
+            serviceRegistry.registerService(rpcServiceProperties.toRpcServiceName(), new InetSocketAddress(host, NettyServer.PORT));
+        } catch (UnknownHostException e) {
+            log.error("occur exception when getHostAddress", e);
+        }
+    }
+
+    /**
+     * 发布服务
+     *
      * @param service 服务实例对象
      */
     @Override
     public void publishService(Object service) {
-        try {
-            String host = InetAddress.getLocalHost().getHostAddress();
-            Class<?> anInterface = service.getClass().getInterfaces()[0];
-            this.addServiceProvider(service, anInterface);
-            serviceRegistry.registerService(anInterface.getCanonicalName(), new InetSocketAddress(host, NettyServer.PORT));
-        } catch (UnknownHostException e) {
-            log.error("occur exception when getHostAddress", e);
-        }
+        this.publishService(service, RpcServiceProperties.builder().version("").group("").build());
     }
 }
