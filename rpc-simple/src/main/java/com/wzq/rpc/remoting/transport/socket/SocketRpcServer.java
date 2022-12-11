@@ -1,16 +1,21 @@
 package com.wzq.rpc.remoting.transport.socket;
 
 import com.wzq.rpc.config.CustomShutdownHook;
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.factory.SingletonFactory;
+import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.utils.concurrent.threadpool.ThreadPoolFactoryUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
+
+import static com.wzq.rpc.remoting.transport.netty.server.NettyServer.PORT;
 
 /**
  * Socket RPC Server 由Socket执行的RPC服务端
@@ -31,20 +36,32 @@ public class SocketRpcServer {
      */
     private static final String THREAD_NAME_PREFIX = "socket-server-rpc-pool";
 
-    /**
-     * 主机和端口
-     */
-    private final String host;
-    private final int port;
+    private final ServiceProvider serviceProvider;
 
     public SocketRpcServer(String host, int port) {
         // 使用抽象出去的线程池工厂类创建线程池
         threadPool = ThreadPoolFactoryUtils.createCustomThreadPoolIfAbsent(THREAD_NAME_PREFIX);
 
-        this.host = host;
-        this.port = port;
+        serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+    }
 
-        SingletonFactory.getInstance(ServiceProviderImpl.class);
+    /**
+     * 发布服务
+     *
+     * @param service Service
+     */
+    public void registerService(Object service) {
+        serviceProvider.publishService(service);
+    }
+
+    /**
+     * 发布服务
+     *
+     * @param service              Service
+     * @param rpcServiceProperties Service相关的属性
+     */
+    public void registerService(Object service, RpcServiceProperties rpcServiceProperties) {
+        serviceProvider.publishService(service, rpcServiceProperties);
     }
 
     /**
@@ -53,7 +70,8 @@ public class SocketRpcServer {
     public void start() {
         // 启动服务端
         try (ServerSocket server = new ServerSocket()) {
-            server.bind(new InetSocketAddress(host, port));
+            String host = InetAddress.getLocalHost().getHostAddress();
+            server.bind(new InetSocketAddress(host, PORT));
             log.info("server starts...");
             CustomShutdownHook.getCustomShutdownHook().clearAll();
             Socket socket;

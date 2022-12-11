@@ -1,6 +1,10 @@
 package com.wzq.rpc.remoting.transport.netty.server;
 
 import com.wzq.rpc.config.CustomShutdownHook;
+import com.wzq.rpc.entity.RpcServiceProperties;
+import com.wzq.rpc.factory.SingletonFactory;
+import com.wzq.rpc.provider.ServiceProvider;
+import com.wzq.rpc.provider.ServiceProviderImpl;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.serialize.Serializer;
@@ -45,6 +49,30 @@ public class NettyServer implements InitializingBean {
      * 序列化器
      */
     private final Serializer serializer = new KryoSerializer();
+
+    /**
+     * 服务提供者
+     */
+    private final ServiceProvider serviceProvider = SingletonFactory.getInstance(ServiceProviderImpl.class);
+
+    /**
+     * 发布服务
+     *
+     * @param service Service
+     */
+    public void registerService(Object service) {
+        serviceProvider.publishService(service);
+    }
+
+    /**
+     * 发布服务
+     *
+     * @param service              Service
+     * @param rpcServiceProperties Service相关的属性
+     */
+    public void registerService(Object service, RpcServiceProperties rpcServiceProperties) {
+        serviceProvider.publishService(service, rpcServiceProperties);
+    }
 
     @SneakyThrows
     public void start() {
