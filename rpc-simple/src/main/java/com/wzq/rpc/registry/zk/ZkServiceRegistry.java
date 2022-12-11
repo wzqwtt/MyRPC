@@ -16,11 +16,11 @@ import java.net.InetSocketAddress;
 public class ZkServiceRegistry implements ServiceRegistry {
 
     @Override
-    public void registerService(String serviceName, InetSocketAddress inetSocketAddress) {
+    public void registerService(String rpcServiceName, InetSocketAddress inetSocketAddress) {
         // 根节点下注册子节点：服务
-        StringBuilder servicePath = new StringBuilder(CuratorUtils.ZK_REGISTER_PORT_PATH).append("/").append(serviceName);
+        StringBuilder servicePath = new StringBuilder(CuratorUtils.ZK_REGISTER_PORT_PATH).append("/").append(rpcServiceName);
         // 服务子节点下注册子节点：服务地址
-        // 节点路径: /my-rpc/com.wzq.rpc.HelloService/127.0.0.1:9999
+        // 节点路径: /my-rpc/com.wzq.rpc.HelloService组名版本名/127.0.0.1:9999
         // inetSocketAddress的toString方法直接是：/127.0.0.1:9999
         servicePath.append(inetSocketAddress.toString());
 

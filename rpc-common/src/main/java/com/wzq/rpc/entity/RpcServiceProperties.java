@@ -29,8 +29,13 @@ public class RpcServiceProperties {
      */
     private String serviceName;
 
+    /**
+     * 转换为service name, 即在zookeeper中挂载的节点
+     *
+     * @return service name
+     */
     public String toRpcServiceName() {
-        return this.getServiceName() + this.getGroup() + this.getVersion();
+        return this.getServiceName() + "-" + this.getGroup() + "-" + this.getVersion();
     }
 
 }

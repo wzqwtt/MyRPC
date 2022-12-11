@@ -30,13 +30,27 @@ public class RpcClientProxy implements InvocationHandler {
      */
     private final ClientTransport clientTransport;
 
+    /**
+     * RpcService相关的属性类
+     */
     private final RpcServiceProperties rpcServiceProperties;
 
+    /**
+     * 当用户不指定RpcServiceProperties，那么默认只有一个实现类，调用默认的实现类
+     *
+     * @param clientTransport 客户端传输对象
+     */
     public RpcClientProxy(ClientTransport clientTransport) {
         this.clientTransport = clientTransport;
         this.rpcServiceProperties = RpcServiceProperties.builder().version("").group("").build();
     }
 
+    /**
+     * 用户指定调用接口的某个实现类
+     *
+     * @param clientTransport      客户端传输对象
+     * @param rpcServiceProperties RpcService相关的属性类
+     */
     public RpcClientProxy(ClientTransport clientTransport, RpcServiceProperties rpcServiceProperties) {
         this.clientTransport = clientTransport;
 

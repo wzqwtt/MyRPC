@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.dto;
 
+import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.enumeration.RpcMessageType;
 import lombok.*;
 
@@ -60,5 +61,18 @@ public class RpcRequest implements Serializable {
      * 该服务隶属于哪个组
      */
     private String group;
+
+    /**
+     * 转换为RpcProperties对象
+     *
+     * @return {@link RpcServiceProperties}对象
+     */
+    public RpcServiceProperties toRpcProperties() {
+        return RpcServiceProperties.builder()
+                .serviceName(this.getInterfaceName())
+                .version(this.getVersion())
+                .group(this.getGroup())
+                .build();
+    }
 
 }

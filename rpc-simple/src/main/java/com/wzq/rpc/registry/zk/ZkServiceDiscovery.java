@@ -1,5 +1,7 @@
 package com.wzq.rpc.registry.zk;
 
+import com.wzq.rpc.enumeration.RpcErrorMessage;
+import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.loadbalance.LoadBalance;
 import com.wzq.rpc.loadbalance.RandomLoadBalance;
 import com.wzq.rpc.registry.ServiceDiscovery;
@@ -27,11 +29,16 @@ public class ZkServiceDiscovery implements ServiceDiscovery {
     }
 
     @Override
-    public InetSocketAddress lookupService(String serviceName) {
+    public InetSocketAddress lookupService(String rpcServiceName) {
         // 获取zookeeper连接
         CuratorFramework zkClient = CuratorUtils.getZKClient();
         // 找到该服务的所有服务地址
-        List<String> serviceUrlList = CuratorUtils.getChildrenNodes(zkClient, serviceName);
+        List<String> serviceUrlList = CuratorUtils.getChildrenNodes(zkClient, rpcServiceName);
+
+        // 判断是否找到服务地址
+        if (serviceUrlList.size() == 0) {
+            throw new RpcException(RpcErrorMessage.SERVICE_CAN_NOT_FOUND, rpcServiceName);
+        }
 
         // 使用负载均衡算法找到一个服务地址
         // eg: 127.0.0.1:9999

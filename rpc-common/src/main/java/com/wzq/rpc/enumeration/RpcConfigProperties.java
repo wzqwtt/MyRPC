@@ -4,7 +4,7 @@ package com.wzq.rpc.enumeration;
  * @author wzq
  * @create 2022-12-09 19:32
  */
-public enum RpcProperties {
+public enum RpcConfigProperties {
 
     /**
      * RPC配置路径
@@ -18,7 +18,7 @@ public enum RpcProperties {
 
     private final String propertyValue;
 
-    RpcProperties(String propertyValue) {
+    RpcConfigProperties(String propertyValue) {
         this.propertyValue = propertyValue;
     }
 

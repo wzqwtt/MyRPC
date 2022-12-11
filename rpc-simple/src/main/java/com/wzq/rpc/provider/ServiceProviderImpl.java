@@ -26,8 +26,10 @@ public class ServiceProviderImpl implements ServiceProvider {
 
     /**
      * 接口名和服务的对应关系
-     * key: service/interface name
-     * value: service
+     * <p>
+     * key: service name (eg: interface name + version + group)
+     * <p>
+     * value: service object
      */
     private final Map<String, Object> serviceMap;
     private final Set<String> registeredService;
@@ -46,7 +48,7 @@ public class ServiceProviderImpl implements ServiceProvider {
      * @param service 服务
      */
     @Override
-    public void addServiceProvider(Object service, Class<?> serviceClass, RpcServiceProperties rpcServiceProperties) {
+    public void addService(Object service, Class<?> serviceClass, RpcServiceProperties rpcServiceProperties) {
         // service name从属性中获取
         String rpcServiceName = rpcServiceProperties.toRpcServiceName();
 
@@ -69,7 +71,7 @@ public class ServiceProviderImpl implements ServiceProvider {
      * @return 服务
      */
     @Override
-    public Object getServiceProvider(RpcServiceProperties rpcServiceProperties) {
+    public Object getService(RpcServiceProperties rpcServiceProperties) {
         String serviceName = rpcServiceProperties.toRpcServiceName();
         Object service = serviceMap.get(serviceName);
         if (service == null) {
@@ -97,7 +99,7 @@ public class ServiceProviderImpl implements ServiceProvider {
             rpcServiceProperties.setServiceName(serviceName);
 
             // 直接添加到Provider
-            this.addServiceProvider(service, serviceRelatedInterface, rpcServiceProperties);
+            this.addService(service, serviceRelatedInterface, rpcServiceProperties);
             // 将该服务直接注册到注册中心
             serviceRegistry.registerService(rpcServiceProperties.toRpcServiceName(), new InetSocketAddress(host, NettyServer.PORT));
         } catch (UnknownHostException e) {

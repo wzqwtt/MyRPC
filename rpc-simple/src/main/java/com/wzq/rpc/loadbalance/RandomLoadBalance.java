@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * 随机负载均衡
+ * 随机负载均衡策略实现
  *
  * @author wzq
  * @create 2022-12-07 22:44

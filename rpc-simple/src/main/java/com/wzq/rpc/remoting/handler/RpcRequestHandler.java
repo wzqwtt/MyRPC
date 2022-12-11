@@ -27,21 +27,14 @@ public class RpcRequestHandler {
     }
 
     /**
-     * 处理RpcRequest中的请求
+     * 处理RpcRequest中的请求，然后返回方法执行结果
      *
      * @param rpcRequest 客户端发送的RpcRequest
      * @return 方法调用的结果
      */
     public Object handle(RpcRequest rpcRequest) {
-        // 构造一个RpcServiceProperties
-        RpcServiceProperties rpcServiceProperties = RpcServiceProperties.builder()
-                .serviceName(rpcRequest.getInterfaceName())
-                .version(rpcRequest.getVersion())
-                .group(rpcRequest.getGroup())
-                .build();
-
         // 通过Provider获取目标类（即客户端需要调用的类）
-        Object service = serviceProvider.getServiceProvider(rpcServiceProperties);
+        Object service = serviceProvider.getService(rpcRequest.toRpcProperties());
         return invokeTargetMethod(rpcRequest, service);
     }
 

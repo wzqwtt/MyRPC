@@ -26,7 +26,7 @@ public class RpcMessageChecker {
      * @param rpcResponse RpcResponse
      * @param rpcRequest  RpcRequest
      */
-    public static void check(RpcResponse rpcResponse, RpcRequest rpcRequest) {
+    public static void check(RpcResponse<Object> rpcResponse, RpcRequest rpcRequest) {
         // 如果rpcResponse为空，则调用服务失败
         if (rpcResponse == null) {
             log.error("调用服务失败,rpcResponse为null,serviceName:{}", rpcRequest.getInterfaceName());

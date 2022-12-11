@@ -5,7 +5,7 @@ import com.wzq.rpc.registry.zk.util.CuratorUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 当服务端（Provider）关闭的时候做一些事情，比如：清楚所有注册的服务
+ * 当服务端（Provider）关闭的时候做一些事情，比如：清除所有注册的服务
  *
  * @author wzq
  * @create 2022-12-06 16:19
