@@ -24,7 +24,6 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
@@ -38,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-public class NettyServer implements InitializingBean {
+public class NettyServer {
 
     /**
      * 端口
@@ -76,6 +75,9 @@ public class NettyServer implements InitializingBean {
 
     @SneakyThrows
     public void start() {
+        // 设置关闭钩子，待JVM退出时执行一个线程，关闭所有资源
+        CustomShutdownHook.getCustomShutdownHook().clearAll();
+
         String host = InetAddress.getLocalHost().getHostAddress();
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -121,17 +123,6 @@ public class NettyServer implements InitializingBean {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-    }
-
-    /**
-     * 在初始化NettyServer类中，设置关闭钩子
-     *
-     * @throws Exception
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // 设置关闭钩子，待JVM退出时执行一个线程，关闭所有资源
-        CustomShutdownHook.getCustomShutdownHook().clearAll();
     }
 
 }
