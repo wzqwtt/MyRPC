@@ -1,6 +1,7 @@
 package com.wzq.rpc.remoting.transport.socket;
 
 import com.wzq.rpc.entity.RpcServiceProperties;
+import com.wzq.rpc.extension.ExtensionLoader;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.exception.RpcException;
 import com.wzq.rpc.registry.ServiceDiscovery;
@@ -22,7 +23,7 @@ import java.net.Socket;
  */
 @Slf4j
 public class SocketRpcClient implements ClientTransport {
-    
+
     /**
      * 服务发现
      */
@@ -32,7 +33,7 @@ public class SocketRpcClient implements ClientTransport {
      * 无参构造方法，默认创建一个Zookeeper的注册中心
      */
     public SocketRpcClient() {
-        this.serviceDiscovery = new ZkServiceDiscovery();
+        this.serviceDiscovery = ExtensionLoader.getExtensionLoader(ServiceDiscovery.class).getExtension("zk");
 
     }
 

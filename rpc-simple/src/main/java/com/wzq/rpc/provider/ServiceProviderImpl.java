@@ -3,6 +3,7 @@ package com.wzq.rpc.provider;
 import com.wzq.rpc.entity.RpcServiceProperties;
 import com.wzq.rpc.enumeration.RpcErrorMessage;
 import com.wzq.rpc.exception.RpcException;
+import com.wzq.rpc.extension.ExtensionLoader;
 import com.wzq.rpc.registry.ServiceRegistry;
 import com.wzq.rpc.registry.zk.ZkServiceRegistry;
 import com.wzq.rpc.remoting.transport.netty.server.NettyServer;
@@ -39,7 +40,8 @@ public class ServiceProviderImpl implements ServiceProvider {
     public ServiceProviderImpl() {
         serviceMap = new ConcurrentHashMap<>();
         registeredService = ConcurrentHashMap.newKeySet();
-        serviceRegistry = new ZkServiceRegistry();
+        // 通过SPI机制获取服务注册中心对象
+        serviceRegistry = ExtensionLoader.getExtensionLoader(ServiceRegistry.class).getExtension("zk");
     }
 
     /**

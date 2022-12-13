@@ -1,5 +1,7 @@
 package com.wzq.rpc.registry;
 
+import com.wzq.rpc.extension.SPI;
+
 import java.net.InetSocketAddress;
 
 /**
@@ -8,6 +10,7 @@ import java.net.InetSocketAddress;
  * @author wzq
  * @create 2022-12-02 16:36
  */
+@SPI
 public interface ServiceRegistry {
 
     /**

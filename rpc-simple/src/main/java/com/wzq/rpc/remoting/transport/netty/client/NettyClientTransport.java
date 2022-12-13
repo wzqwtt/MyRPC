@@ -1,6 +1,7 @@
 package com.wzq.rpc.remoting.transport.netty.client;
 
 import com.wzq.rpc.entity.RpcServiceProperties;
+import com.wzq.rpc.extension.ExtensionLoader;
 import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
@@ -32,7 +33,8 @@ public class NettyClientTransport implements ClientTransport {
     private final ChannelProvider channelProvider;
 
     public NettyClientTransport() {
-        this.serviceDiscovery = new ZkServiceDiscovery();
+        // 通过SPI机制获取serviceDiscovery的实现
+        this.serviceDiscovery = ExtensionLoader.getExtensionLoader(ServiceDiscovery.class).getExtension("zk");
         this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
         this.channelProvider = SingletonFactory.getInstance(ChannelProvider.class);
     }
