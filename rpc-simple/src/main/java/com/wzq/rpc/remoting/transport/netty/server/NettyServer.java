@@ -2,6 +2,7 @@ package com.wzq.rpc.remoting.transport.netty.server;
 
 import com.wzq.rpc.config.CustomShutdownHook;
 import com.wzq.rpc.entity.RpcServiceProperties;
+import com.wzq.rpc.extension.ExtensionLoader;
 import com.wzq.rpc.factory.SingletonFactory;
 import com.wzq.rpc.provider.ServiceProvider;
 import com.wzq.rpc.provider.ServiceProviderImpl;
@@ -47,7 +48,7 @@ public class NettyServer {
     /**
      * 序列化器
      */
-    private final Serializer serializer = new KryoSerializer();
+    private final Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension("kryo");
 
     /**
      * 服务提供者

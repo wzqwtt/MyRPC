@@ -1,5 +1,6 @@
 package com.wzq.rpc.remoting.transport.netty.client;
 
+import com.wzq.rpc.extension.ExtensionLoader;
 import com.wzq.rpc.remoting.dto.RpcRequest;
 import com.wzq.rpc.remoting.dto.RpcResponse;
 import com.wzq.rpc.serialize.Serializer;
@@ -40,8 +41,9 @@ public final class NettyClient {
         // 线程组
         eventLoopGroup = new NioEventLoopGroup();
 
+        // TODO(exeract) 字符串提取
         // 序列化器
-        Serializer serializer = new KryoSerializer();
+        Serializer serializer = ExtensionLoader.getExtensionLoader(Serializer.class).getExtension("kryo");
 
         // BootStrap配置
         bootstrap = new Bootstrap();

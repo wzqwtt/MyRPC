@@ -1,11 +1,14 @@
 package com.wzq.rpc.serialize;
 
+import com.wzq.rpc.extension.SPI;
+
 /**
  * 序列化与反序列化机制，所有序列化类都需要实现这个接口
  *
  * @author wzq
  * @create 2022-12-02 22:18
  */
+@SPI
 public interface Serializer {
 
     /**

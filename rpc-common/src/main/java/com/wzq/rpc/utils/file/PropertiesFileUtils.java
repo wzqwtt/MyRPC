@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -17,9 +18,11 @@ public class PropertiesFileUtils {
     }
 
     public static Properties readPropertiesFile(String fileName) {
-        String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        String rpcConfigPath = rootPath + fileName;
-
+        String rpcConfigPath = "";
+        URL url = Thread.currentThread().getContextClassLoader().getResource("");
+        if (url != null) {
+            rpcConfigPath = url.getPath() + fileName;
+        }
         Properties properties = null;
 
         try (FileInputStream fileInputStream = new FileInputStream(rpcConfigPath)) {

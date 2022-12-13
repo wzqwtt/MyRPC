@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
+ * Dubbo SPI
+ *
  * @author wzq
  * @create 2022-12-13 13:53
  */
