@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 操作Zookeeper工具类，使用Curator工具
+ * 操作Zookeeper工具类，使用Curator
  *
  * @author wzq
  * @create 2022-12-05 16:40
